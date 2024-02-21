@@ -8,6 +8,7 @@ from .models import Store, Product
 def get_store_page(request):
     stores = Store.objects.all()
     products = Product.objects.all()
+    print(stores)
     context = {
         'stores': stores,
         'products': products,
