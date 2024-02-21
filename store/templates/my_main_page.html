@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="header">
+    <div class="logo_img">
+        <img src="{% static 'img/zara.jpeg' %}" alt="">
+    </div>
+    <div class="shop" style="bottom: 0px; transform-origin: 50%">
+        <h1>Zara</h1>
+    </div>
+
+    <div class="phone_number" style="width: 10%; height: 1px; background-color: black;
+    position: center; left: 10px; bottom: 0px; transform-origin: 50% 50% 1px;">
+        <a>our phone numbers</a>
+        <p>+375(44)333-35-36</p>
+        <p>+375(29)333-36-36</p>
+        <p>+375(33)111-30-30</p>
+
+    </div>
+</div>
+<div class="navigate">
+    {% for store in stores %}
+    <p class="navigate_name"> </p>
+    {% endfor %}
+</div>
+<div class="main">
+    {% block content %}
+    {% for product in products %}
+    <u>{{product.name}}</u>
+<!--    <div class="logo_img_2">-->
+<!--    <img src="{% static 'img/zara_girls.jpeg' %}" alt="">-->
+<!--    </div>-->
+    {% endfor %}
+    {% endblock %}
+</div>
+
+
+</body>
+</html>
