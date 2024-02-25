@@ -13,9 +13,9 @@ class Product(models.Model):
     name = models.CharField(max_length=150)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     store = models.ForeignKey('Store', on_delete=models.CASCADE)
-    colors = models.ManyToManyField('ColorProduct')
-
-    # pic = models.ImageField()
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='img', null=True)
+    # colors = models.ManyToManyField('ColorProduct')
 
     def __str__(self):
         return self.name

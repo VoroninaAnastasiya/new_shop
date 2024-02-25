@@ -8,11 +8,11 @@
 </head>
 <body>
 <div class="header">
-    <div class="logo_img">
+    <div class="logo_img" >
         <img src="{% static 'img/zara.jpeg' %}" alt="Zara Logo">
     </div>
     <div class="shop" style="bottom: 0px; left: 50%;">
-        <h1 style="font-size: 50px; text-align: center">Zara</h1>
+        <h1 style="font-size: 50px; text-align: center">Мой магазин</h1>
     </div>
     <div class="phone_number" style="width: 10%; height: 1px; background-color: black;
     position: center; left: 1350px;">
@@ -22,18 +22,28 @@
         <p>+375(33)111-30-30</p>
     </div>
 </div>
+<!--{% block content %}-->
 <div class="navigate">
-<!--    {% for store in stores %}-->
-<!--    <p class="navigate_name">{{ store.name }}</p>-->
-<!--    {% endfor %}-->
+
+    {% for store in stores %}
+    <a href="#" class="navigate_name">{{ store.name }}</a>
+    {% endfor %}
+
 </div>
-<div class="main_part">
-    {% block content %}
-        {% for product in products %}
-            <u>{{ product.name }}</u>
-        {% endfor %}
-    {% endblock %}
+<div class="main">
+    {% for product in products %}
+    <a href="#" class="card_link">
+    <div class='card'>
+        <h3 class="card_title">{{ product.name }}</h3>
+        <div class="card_img">
+            <img src="{{ product.image.url }}" alt="">
+        </div>
+        <p>{{ product.price }}</p>
+    </div>
+    </a>
+    {% endfor %}
 </div>
+<!--{% endblock %}-->
 <div class="logo_img_2">
     <img src="{% static 'img/zara_girls.jpeg' %}" alt="Zara Girls Logo">
 </div>

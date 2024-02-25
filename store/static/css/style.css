@@ -1,40 +1,37 @@
 .header {
-    height: 50px;
+    height: 250px;
     background: #DEB887;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
 }
 
 .logo_img {
-    max-width: 200px;
+    max-width: 150px;
     max-height: 50px;
 }
 
 .logo_img img {
     width: 100%;
     night: 100%;
+    float: left
 }
 
-.navigate_name{
-    gap: 10px
-}
 
-.navigate {
+.navigate_name {
     height: 150px;
     background: #DEB887;
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
-.main_part {
-    height: 20px;
+.main {
+    height: 200px;
     display: flex;
     background: #FFEBCD;
     justify-content: space-around;
     align-items: center;
-
 }
 
 }
@@ -51,4 +48,34 @@ justify-content: space-around;
 .logo_img_2 img {
     width: 100%;
     night: 100%;
+}
+
+.card_img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.card_img img {
+    width: 100%;
+    height: 100%
+}
+
+.card {
+    width: 200px;
+    height: 250px;
+    background: #A52A2A;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.card_title {
+    text-decoration: none;
+}
+
+.card_link {
+    text-decoration: none;
+    color: black;
 }
