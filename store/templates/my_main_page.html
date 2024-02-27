@@ -9,7 +9,7 @@
 <body>
 <div class="header">
     <div class="logo_img" >
-        <img src="{% static 'img/zara.jpeg' %}" alt="Zara Logo">
+        <a href="/main/"><img src="{% static 'img/zara.jpeg' %}" alt="Zara Logo"></a>
     </div>
     <div class="shop" style="bottom: 0px; left: 50%;">
         <h1 style="font-size: 50px; text-align: center">Мой магазин</h1>
@@ -22,13 +22,15 @@
         <p>+375(33)111-30-30</p>
     </div>
 </div>
-<!--{% block content %}-->
+{% block content %}
 <div class="navigate">
 
     {% for store in stores %}
-    <a href="#" class="navigate_name">{{ store.name }}</a>
+    <a href="{{store.name}}" class="navigate_name">{{ store.name }}</a>
     {% endfor %}
-
+    <div>
+        <button onclick="window.location.href='http://127.0.0.1:8000/main/add_product/';" class="add_product" type="button" >Add new product</button>
+    </div>
 </div>
 <div class="main">
     {% for product in products %}
@@ -39,11 +41,12 @@
             <img src="{{ product.image.url }}" alt="">
         </div>
         <p>{{ product.price }}</p>
+    <button class="card__content-button">Подробнее...</button>
     </div>
     </a>
     {% endfor %}
 </div>
-<!--{% endblock %}-->
+{% endblock %}
 <div class="logo_img_2">
     <img src="{% static 'img/zara_girls.jpeg' %}" alt="Zara Girls Logo">
 </div>

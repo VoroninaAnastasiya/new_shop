@@ -1,0 +1,17 @@
+{% extends 'my_main_page.html' %}
+
+{% block content %}
+<div class="main">
+    {% for product in products %}
+    <a href="lichi/" class="card_link">
+    <div class='card'>
+        <h3 class="card_title">{{ product.name }}</h3>
+        <div class="card_img">
+            <img src="{{ product.image.url }}" alt="">
+        </div>
+        <p>{{ product.price }}</p>
+    </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

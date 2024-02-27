@@ -7,8 +7,6 @@ from .models import Store, Product
 # Create your views here.
 def get_store_page(request):
     stores = Store.objects.all()
-    print(f"stores -> {stores}")
-    print(f"prd -> {Product.objects.all().query}")
     products = Product.objects.all()
     context = {
         'stores': stores,
@@ -18,8 +16,6 @@ def get_store_page(request):
 
 
 def get_add_product_page(request):
-    print("get_add_product_page\n\n\n\n")
-    print(request.method)
     stores = Store.objects.all()
     products = Product.objects.all()
     form = AddProductForms()
@@ -37,3 +33,26 @@ def get_add_product_page(request):
     }
 
     return render(request, "add_product.html", context)
+
+
+def get_all_lichi_products(request):
+    store = Store.objects.get(id=4)
+    products = Product.objects.filter(store=store.id).all()
+    context = {
+        'store': store,
+        'products': products,
+    }
+    return render(request, 'get_all_lichi_products.html', context)
+
+def get_all_zara_products(request):
+    store = Store.objects.get(id=3)
+    products = Product.objects.filter(store=store.id).all()
+    context = {
+        'store': store,
+        'products': products,
+    }
+    return render(request, 'get_all_zara_products.html', context)
+
+
+def get_product_info(request):
+    product = Product.objects.get()
