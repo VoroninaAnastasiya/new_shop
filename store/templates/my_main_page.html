@@ -14,8 +14,7 @@
     <div class="shop" style="bottom: 0px; left: 50%;">
         <h1 style="font-size: 50px; text-align: center">Мой магазин</h1>
     </div>
-    <div class="phone_number" style="width: 10%; height: 1px; background-color: black;
-    position: center; left: 1350px;">
+    <div class="phone_number">
         <p>our phone numbers</p>
         <p>+375(44)333-35-36</p>
         <p>+375(29)333-36-36</p>
@@ -24,10 +23,12 @@
 </div>
 {% block content %}
 <div class="navigate">
-
-    {% for store in stores %}
-    <a href="{{store.name}}" class="navigate_name">{{ store.name }}</a>
+    <div style=" display:flex; gap:10px; ">
+{% for store in stores %}
+    <a href="{% url 'lichi' store.id %}" class="navigate_name">{{ store.name }}</a>
     {% endfor %}
+    </div>
+
     <div>
         <button onclick="window.location.href='http://127.0.0.1:8000/main/add_product/';" class="add_product" type="button" >Add new product</button>
     </div>
@@ -38,7 +39,9 @@
     <div class='card'>
         <h3 class="card_title">{{ product.name }}</h3>
         <div class="card_img">
-            <img src="{{ product.image.url }}" alt="">
+            {% if product.image %}
+             <img src="{{ product.image.url }}" alt="">
+            {% endif %}
         </div>
         <p>{{ product.price }}</p>
     <button class="card__content-button">Подробнее...</button>

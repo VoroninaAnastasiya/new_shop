@@ -20,12 +20,16 @@ def get_add_product_page(request):
     products = Product.objects.all()
     form = AddProductForms()
     if request.method == 'POST':
-        form = AddProductForms(request.POST)
+        form = AddProductForms(request.POST, request.FILES)
         if form.is_valid():
             new_product = Product(**form.cleaned_data)
             new_product.save()
             return redirect('home')
-        print(request.POST)
+            print(request.POST)
+        else:
+            print(form.errors)
+
+
     context = {
         'stores': stores,
         'products': products,
@@ -35,11 +39,9 @@ def get_add_product_page(request):
     return render(request, "add_product.html", context)
 
 
-def get_all_lichi_products(request):
-    store = Store.objects.get(id=4)
-    products = Product.objects.filter(store=store.id).all()
+def get_all_lichi_products(request, id):
+    products = Product.objects.filter(store=id)
     context = {
-        'store': store,
         'products': products,
     }
     return render(request, 'get_all_lichi_products.html', context)

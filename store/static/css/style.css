@@ -1,5 +1,5 @@
 .header {
-    height: 100px;
+    height: 200px;
     background: #DEB887;
     display: flex;
     justify-content: space-between;
@@ -8,23 +8,27 @@
 
 .logo_img {
     max-width: 130px;
-    max-height: 50px;
+    max-height: 130px;
 }
 
 .logo_img img {
     width: 100%;
     night: 100%;
-    float: left
+    float: left;
 }
 
-
-.navigate_name {
-    height: 150px;
+.navigate {
+ height: 70px;
     background: #DEB887;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
+.navigate_name {
+
+}
+
 
 .main {
     height: 350px;
