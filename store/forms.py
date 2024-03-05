@@ -1,6 +1,8 @@
 from decimal import Decimal
 
 from django import forms
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 from .models import Store
@@ -53,3 +55,29 @@ class AddProductForms(forms.Form):
     store = forms.ModelChoiceField(queryset=Store.objects.all(), label='Магазин', validators=[],)
 
 
+class AuthForm(forms.Form):
+    email = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput(render_value=False))
+
+    def clean(self):
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Вы не зарегистрированы! Пожалуйста, пройдите регистрацию!")
+        self.user = User.objects.get(email=email)
+        return self.cleaned_data
+
+    def authenticate_user(self):
+        return
+
+
+
+class AuthRegisterForm(forms.Form):
+    username = forms.CharField(required=True)
+    email = forms.CharField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput(render_value=False), required=True)
+
+    def clean(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Вы уже зарегистрированы!")
+        return self.cleaned_data

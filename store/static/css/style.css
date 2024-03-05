@@ -99,3 +99,17 @@ justify-content: space-around;
 
     background: #DEB887;
 }
+
+.form_register {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    background: #DEB887;
+}
+
+.registration {
+    text-decoration: none;
+    color: black;
+    align-items: baseline;
+    justify-content: center;
+}

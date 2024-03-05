@@ -20,6 +20,7 @@
         <p>+375(29)333-36-36</p>
         <p>+375(33)111-30-30</p>
     </div>
+
 </div>
 {% block content %}
 <div class="navigate">
@@ -32,6 +33,12 @@
     <div>
         <button onclick="window.location.href='http://127.0.0.1:8000/main/add_product/';" class="add_product" type="button" >Add new product</button>
     </div>
+</div>
+<!--<div>-->
+<!--    <button onclick="window.location.href='http://127.0.0.1:8000/main/register/';" class="registration" type="button" >Registration</button>-->
+<!--</div>-->
+<div>
+    <button onclick="window.location.href='http://127.0.0.1:8000/main/auth/';" class="registration" type="button" >Login</button>
 </div>
 <div class="main">
     {% for product in products %}

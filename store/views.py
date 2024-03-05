@@ -1,6 +1,9 @@
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
-from .forms import AddProductForms
+from .forms import AddProductForms, AuthForm, AuthRegisterForm
 from .models import Store, Product
 
 
@@ -25,7 +28,6 @@ def get_add_product_page(request):
             new_product = Product(**form.cleaned_data)
             new_product.save()
             return redirect('home')
-            print(request.POST)
         else:
             print(form.errors)
 
@@ -55,6 +57,29 @@ def get_all_zara_products(request):
     }
     return render(request, 'get_all_zara_products.html', context)
 
+def auth_login(request):
+    form = AuthForm()
+    if request.method == 'POST':
+        form = AuthForm(request.POST)
+        if form.is_valid():
+            user = form.authenticate_user()
+            login(request, user)
+            return redirect('home')
 
-def get_product_info(request):
-    product = Product.objects.get()
+    return render(request, 'auth.html', {'form': form})
+
+
+
+def register(request):
+    form = AuthRegisterForm()
+    if request.method == 'POST':
+        form = AuthRegisterForm(request.POST)
+        if form.is_valid():
+            User.objects.create_user(**form.cleaned_data)
+            return redirect('home')
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, "register.html", context)

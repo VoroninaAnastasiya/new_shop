@@ -1,0 +1,16 @@
+{% extends 'my_main_page.html' %}
+
+{% block content %}
+<div class="form_register">
+    <div>
+        <button onclick="window.location.href='http://127.0.0.1:8000/main/register/';" class="registration" type="button" >Registration</button>
+    </div>
+<form action="" method="POST">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="отправить">
+    </form>
+</div>
+{% endblock %}
