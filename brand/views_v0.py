@@ -8,6 +8,9 @@ from .models import Store, Product
 
 
 # Create your views here.
+# переписать на классы все методы
+
+
 def get_store_page(request):
     stores = Store.objects.all()
     products = Product.objects.all()
@@ -15,9 +18,11 @@ def get_store_page(request):
         'stores': stores,
         'products': products,
     }
+    print(request.user)
     return render(request, 'my_main_page.html', context)
 
 
+# это уходит с главной страницы в профиль для авторизационных пользователей с ролью менеджер
 def get_add_product_page(request):
     stores = Store.objects.all()
     products = Product.objects.all()
@@ -40,7 +45,7 @@ def get_add_product_page(request):
 
     return render(request, "add_product.html", context)
 
-
+# сделать один метод по фильтрации товаров по названиям продуктов из get_all_lichi_products и get_all_zara_products, плюс пагинация
 def get_all_lichi_products(request, id):
     products = Product.objects.filter(store=id)
     context = {
@@ -52,11 +57,13 @@ def get_all_zara_products(request):
     store = Store.objects.get(id=3)
     products = Product.objects.filter(store=store.id).all()
     context = {
-        'store': store,
+        'brand': store,
         'products': products,
     }
     return render(request, 'get_all_zara_products.html', context)
 
+
+# переписать на jwt авторизацию
 def auth_login(request):
     form = AuthForm()
     if request.method == 'POST':
@@ -69,7 +76,7 @@ def auth_login(request):
     return render(request, 'auth.html', {'form': form})
 
 
-
+# переписать на jwt авторизацию
 def register(request):
     form = AuthRegisterForm()
     if request.method == 'POST':
