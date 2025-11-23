@@ -10,7 +10,11 @@
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
-    <assistants />
+    <assistants>
+      <assistant-state connection-id="e211297d-3153-400f-bef5-62902cc6a687" default-profile-name="" selected-conversation-id="" assistant-type="GENERIC" availability="UNAVAILABLE" acknowledgement="NONE">
+        <conversations />
+      </assistant-state>
+    </assistants>
   </component>
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
@@ -31,17 +35,6 @@
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="e211297d-3153-400f-bef5-62902cc6a687" />
-  </component>
-  <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.auth_user" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.store_colorproduct" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.auth_group" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.auth_group_permissions" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.store_product" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.django_admin_log" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.django_session" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.store_store" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.auth_permission" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />

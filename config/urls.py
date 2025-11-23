@@ -19,9 +19,24 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('main/', include('brand.urls')),
+    path('brands/', include('brand.urls'), name='Бренды'),
+    path('users/', include('user.urls'), name='Пользователи'),
+    path('products/', include('product.urls'), name='Товары'),
+    path('categories/', include('category.urls'), name='Категории товаров'),
+    path('api/', include('user_auth.urls', namespace='authentication')),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # логин
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # обновление
+    path('user/', include('user.urls')),
+    path('api/cart/', include('cart.urls')),
 ]
 
 if settings.DEBUG:

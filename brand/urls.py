@@ -1,10 +1,21 @@
 from django.urls import path
 
+from .views import BrandsAPIView
+
 urlpatterns = [
+    path('list_brands', BrandsAPIView.as_view(), name='brands'),
+]
+
+
+
+
+
+
+# urlpatterns = [
     # path('', get_store_page, name='home'),
     # path('add_product/', get_add_product_page, name='add_product'),
     # path('Lichi/<int:id>/', get_all_lichi_products, name='lichi'),
     # path('Zara/', get_all_zara_products, name='zara'),
     # path('register/', register, name='register'),
     # path('auth/', auth_login, name='login'),
-]
+# ]
