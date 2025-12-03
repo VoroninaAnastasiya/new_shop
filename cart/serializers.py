@@ -29,4 +29,33 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         product = validated_data.pop('product_id')
-        return CartItem.objects.create(product=product, **validated_data)
+        user = validated_data['user']
+        quantity = validated_data.get('quantity', 1)
+
+        # Проверка остатков
+        if product.available_quantity < quantity:
+            raise serializers.ValidationError('Недостаточно товара в наличии')
+
+        # Если товар уже есть в корзине — увеличиваем количество
+        cart_item, created = CartItem.objects.get_or_create(
+            user=user,
+            product=product,
+            defaults={'quantity': quantity}
+        )
+        if not created:
+            new_quantity = cart_item.quantity + quantity
+            if product.available_quantity < new_quantity:
+                raise serializers.ValidationError('Недостаточно овара в наличии')
+            cart_item.quantity = new_quantity
+            cart_item.save()
+
+        return cart_item
+
+    def update(self, instance, validated_data):
+        # Проверка при изменении количества
+        quantity = validated_data.get('quantity', instance.quantity)
+        if instance.product.available_quantity < quantity:
+            raise serializers.ValidationError("Недостаточно товара в наличии")
+        instance.quantity = quantity
+        instance.save()
+        return instance

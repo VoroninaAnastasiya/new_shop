@@ -31,26 +31,26 @@ class  RegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """ Ощуществляет сериализацию и десериализацию объектов User. """
     # Пароль должен содержать от 8 до 128 символов.
+    token = serializers.CharField(max_length=128, min_length=8, read_only=True)
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'name', 'lastname', 'contact_phone', 'token') #в примере без токена
-        read_only_fields = ('token',)
+        fields = ('id', 'email', 'username', 'name', 'lastname', 'contact_phone', 'token', 'password') #в примере без токена
 
-        def update(self, instance, validated_data):
-            """ Выполняет обновление User. """
-            password = validated_data.pop('password', None)
+    def update(self, instance, validated_data):
+        """ Выполняет обновление User. """
+        password = validated_data.pop('password', None)
 
-            for key, value in validated_data.items():
-                setattr(instance, key, value) #Для ключей, оставшихся в validated_data мы устанавливаем значения
-            # в текущий экземпляр User по одному.
+        for key, value in validated_data.items():
+            setattr(instance, key, value) #Для ключей, оставшихся в validated_data мы устанавливаем значения
+        # в текущий экземпляр User по одному.
 
-            if password is not None:
-                instance.set_password(password) # 'set_password()' решает все вопросы, связанные с безопасностью
-                # set_password() не сохраняет модель.
-                instance.save()
+        if password is not None:
+            instance.set_password(password) # 'set_password()' решает все вопросы, связанные с безопасностью
+            # set_password() не сохраняет модель.
+            instance.save()
 
-            return instance
+        return instance
 
 
 class LoginSerializer(serializers.Serializer):
