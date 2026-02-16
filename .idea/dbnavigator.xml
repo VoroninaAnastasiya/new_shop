@@ -19,7 +19,7 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
@@ -35,6 +35,10 @@
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="e211297d-3153-400f-bef5-62902cc6a687" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.cart_cartitem" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="e211297d-3153-400f-bef5-62902cc6a687" dataset="main.product_product" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />

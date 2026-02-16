@@ -16,7 +16,7 @@ class ProfileUser(models.Model):
     user_profile = models.OneToOneField(settings.AUTH_USER_MODEL,  # Ссылается на кастомную модель User
         on_delete=models.CASCADE,
         verbose_name='Профиль пользователя')
-    image = models.ImageField(upload_to='img', null=True, verbose_name='Аватарка пользователя')
+    image = models.ImageField(upload_to='img', null=True, blank=True, verbose_name='Аватарка пользователя')
 
     def __str__(self):
-        return self.user_profile
+        return f"Профиль: {self.user_profile.email}"

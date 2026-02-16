@@ -21,6 +21,8 @@ class UserManager(BaseUserManager):
         """ Создает и возвращает пользователя с имэйлом, паролем и именем. """
         if not email:
             raise ValueError('Users must have an email address')
+        if not username:
+            raise ValueError('Users must have a username')
         email = self.normalize_email(email)
         user = self.model(
             username=username,
@@ -95,7 +97,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Временная метка показывающая время последнего обновления объекта.
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # Дополнительный поля, необходимые Django при указании кастомной модели пользователя.
     # Свойство USERNAME_FIELD сообщает нам, какое поле мы будем использовать
@@ -106,6 +108,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Сообщает Django, что определенный выше класс UserManager
     # должен управлять объектами этого типа.
     objects = UserManager()
+
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
     def __str__(self):
         """ Строковое представление модели (отображается в консоли) """
@@ -126,11 +133,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         почты. Обычно это имя фамилия пользователя, но поскольку мы не
         используем их, будем возвращать username.
         """
-        return self.username
+        return f"{self.name} {self.lastname}".strip()
     #
     def get_short_name(self):
         """ Аналогично методу get_full_name(). """
-        return self.username
+        return self.name or self.username
 
     # def _generate_jwt_token(self):
     #     """

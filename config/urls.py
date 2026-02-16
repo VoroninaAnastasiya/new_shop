@@ -51,6 +51,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # обновление
     path('user/', include('user.urls')),
     path('api/cart/', include('cart.urls')),
+    path('api/orders/', include('order.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0),
             name='schema-json'),

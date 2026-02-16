@@ -86,7 +86,7 @@ class LoginSerializer(serializers.Serializer):
         # Если пользователь с данными почтой/паролем не найден, то authenticate
         # вернет None. Возбудить исключение в таком случае.
         if user is None:
-            raise serializers.ValidationError('A user with this email and password was not found')
+            raise serializers.ValidationError('Invalid credentials')
 
         # флаг is_active для модели User - сообщает, был ли пользователь деактивирован или заблокирован.
         # Проверить стоит, вызвать исключение в случае True.

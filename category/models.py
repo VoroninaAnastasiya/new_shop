@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class Category(models.Model):
-    name = models.CharField(max_length=150, verbose_name='Название категории товара')
+    name = models.CharField(max_length=150, unique=True, verbose_name='Название категории товара') #unique=True - чтобы не было двух одинаковых категорий
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

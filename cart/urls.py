@@ -6,7 +6,7 @@ from user.urls import urlpatterns
 from .views import CartItemViewSet, CartTotalView
 
 router = DefaultRouter()
-router.register(r'', CartItemViewSet, basename='cart')
+router.register(r'cart-items', CartItemViewSet, basename='cart')
 
 urlpatterns = [
     path('', include(router.urls)),

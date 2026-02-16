@@ -13,7 +13,8 @@ class CartItem(models.Model):
 
     class Meta:
         unique_together = ('user', 'product')#один и тот же товар
-        # не может быть добавлен дважды одним пользователем — только увеличивается quantity
+        #TODO не может быть добавлен дважды одним пользователем — только увеличивается quantity, можно доработать
+        # заменив unique_together на UniqueConstraint - более современный вариант
         verbose_name = 'Элемент корзины'
         verbose_name_plural = 'Элементы корзины'
 

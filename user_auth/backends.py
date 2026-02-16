@@ -9,7 +9,7 @@ from .models import User
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
-    authentication_header_prefix = 'Token'
+    authentication_header_prefix = 'Bearer'
 
     def authenticate(self, request):
         """
@@ -21,7 +21,6 @@ class JWTAuthentication(authentication.BaseAuthentication):
             тогда, когда аутентификация пройдена успешно.
         """
         request.user = None
-
         auth_header = authentication.get_authorization_header(request).split()
         # 'auth_header' должен быть массивом с двумя элементами:
         # 1) именем заголовка аутентификации (Token в нашем случае)

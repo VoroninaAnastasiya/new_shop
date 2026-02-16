@@ -44,10 +44,14 @@ class CartItemSerializer(serializers.ModelSerializer):
         )
         if not created:
             new_quantity = cart_item.quantity + quantity
+
             if product.available_quantity < new_quantity:
-                raise serializers.ValidationError('Недостаточно овара в наличии')
-            cart_item.quantity = new_quantity
-            cart_item.save()
+                raise serializers.ValidationError('Недостаточно товара в наличии')
+
+            # и сохраняем только если количество реально изменилось
+            if cart_item.quantity != new_quantity:
+                cart_item.quantity = new_quantity
+                cart_item.save()
 
         return cart_item
 

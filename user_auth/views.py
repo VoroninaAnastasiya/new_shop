@@ -43,6 +43,7 @@ User = get_user_model()
 
 
 class UserListAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] #нужно скрыть, чтобы не все могли видеть список всех наших пользователей, только админ
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -104,14 +105,20 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class LogoutAPIView(APIView):
+    '''API‑эндпоинт, который обрабатывает запросы на выход из системы (логаут).'''
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
+        refresh_token = request.data.get('refresh')
+
+        if not refresh_token: #проверка, что токен вообще передан.
+            return Response({"error": "Refresh token is required"},
+                            status=status.HTTP_400_BAD_REQUEST)
         try:
-            refresh_token = request.data.get('refresh')
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            token = RefreshToken(refresh_token)#создание объекта RefreshToken из строки.
+            token.blacklist()#добавляем токен в «чёрный список», blacklist помечает токен как недействительный.
             return Response({"detail": "Вы успешно вышли из системы."}, status=status.HTTP_205_RESET_CONTENT)
+            #HTTP_205_RESET_CONTENT означает, что клиенту стоит «сбросить» своё состояние. Например, на фронте.
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

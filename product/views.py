@@ -5,14 +5,17 @@ from rest_framework.views import APIView
 from product.models import Product
 from product.serializers import ProductSerializer
 
+from .pagination import ProductPagination
 
 # Create your views here.
 class ProductsAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    pagination_class = ProductPagination
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
+    #TODO можно ограничить доступ - permission_classes = [IsAdminUser] - чтобы не все могли создавать товар
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -30,5 +33,4 @@ class ProductAvailabilityView(APIView):
             'id': product.id,
             'name': product.name,
             'available_quantity': product.available_quantity
-
         })

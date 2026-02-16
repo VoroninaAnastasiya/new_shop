@@ -11,6 +11,9 @@ User = get_user_model()
 
 
 class ProfileUserSerializer(serializers.ModelSerializer):
+    # email видно на фронте
+    user_email = serializers.EmailField(source='user_profile.email', read_only=True)
     class Meta:
         model = ProfileUser
-        fields = ('user_profile', 'image')
+        fields = ('user_profile', 'user_email', 'image')
+        read_only_fields = ('user_profile',)#Пользователь не должен иметь возможность менять, к какому User привязан профиль

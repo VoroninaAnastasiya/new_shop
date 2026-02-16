@@ -1,6 +1,6 @@
 from django.core.serializers import serialize
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import CartItem
@@ -17,6 +17,17 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # метод, отвечающий за создание нового CartItem, автоматически подставляя текущего пользователя
         serializer.save(user=self.request.user)
+
+    def destroy(self, request, *args, **kwargs): #Получает элемент по его идентификатору с помощью self.get_object()
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance) #метод perform_destroy удаляет элемент из базы данных.
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Элемент не найден в корзине.'},
+                            status=status.HTTP_404_NOT_FOUND
+            )
+
 
 
 class CartTotalView(APIView):
