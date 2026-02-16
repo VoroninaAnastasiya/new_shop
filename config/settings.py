@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,8 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'store',
-    'new_store',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
+    'brand',
+    'user_auth',
+    'category',
+    'product',
+    'user',
+    'cart',
+    'order',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +135,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+AUTH_USER_MODEL = 'user_auth.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'user_auth.backends.JWTAuthentication',
+    ),
+    'EXCEPTION_HANDLER': 'config.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=360),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_BLACKLIST_ENABLED": True,
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
