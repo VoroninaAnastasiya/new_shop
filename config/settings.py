@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'user',
     'cart',
     'order',
+    'documents',
 ]
 
 MIDDLEWARE = [
@@ -63,9 +64,18 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
+# Jinja2
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [BASE_DIR / 'templates_jinja'], # папка для Jinja-шаблонов '
+        'APP_DIRS': False,
+        'OPTIONS': { 'environment': 'config.jinja2.environment', # создадим файл ниже
+        },
+    },
+# Django
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,6 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [ BASE_DIR / "static", ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -143,6 +154,11 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'user_auth.backends.JWTAuthentication',
     ),
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer', # Оставляем JSON для API
+        'rest_framework.renderers.BrowsableAPIRenderer', # Для удобства разработки
+        'rest_framework.renderers.TemplateHTMLRenderer', # Добавляем рендерер шаблонов
+    ],
     'EXCEPTION_HANDLER': 'config.exceptions.core_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
 }
@@ -166,3 +182,11 @@ SWAGGER_SETTINGS = {
     }
 }
 
+#для настройки smtp
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True  # для Яндекса лучше SSL
+EMAIL_HOST_USER = 'voronina-nastya.97@yandex.ru'
+EMAIL_HOST_PASSWORD = 'ayhxspezvfcfhoum'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -1,10 +1,15 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
+
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from rest_framework.permissions import IsAuthenticated
+
+from django.shortcuts import render
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -61,4 +66,26 @@ class OrderViewSet(viewsets.ModelViewSet):
         cart_items.delete()
 
         serializer = self.get_serializer(order)
+        #! rabbitmq отправка на почту html о созданном заказе. rabbitmq подключение,
+        # потом в отдельном файле делаешь функцию которая будет отправлять сообщение на почту.
+        # Пример rabbitmq в checkin-core проекте
+        # exchange = Exchange(settings.UPDATER_V2['EXCHANGE_TO_UPDATER_V2'], type='topic')
+        # pusher = RabbitMQPusher()
+        #
+        # entry_form_data = {
+        #     "url": "/documents/",
+        #     "method": "POST",
+        #     "changes": input_data
+        # }
+        # pusher.send(entry_form_data, exchange, routing_key)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class OrderHTMLAPIView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    permission_classes = [IsAuthenticated]
+    template_name = 'orders.html'
+
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user)
+        return Response({'orders': orders})

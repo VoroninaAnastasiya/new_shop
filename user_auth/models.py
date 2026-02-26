@@ -70,8 +70,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     # повышения скорости поиска в дальнейшем.
     username = models.CharField(db_index=True, max_length=255, unique=True)
 
-    name = models.CharField(max_length=50, verbose_name='Имя пользователя')
-    lastname = models.CharField(max_length=50, verbose_name='Фамилия пользователя')
+    name = models.CharField(max_length=50, verbose_name='Имя пользователя', null=True, blank=True)
+    lastname = models.CharField(max_length=50, verbose_name='Фамилия пользователя', null=True, blank=True)
     contact_phone = models.IntegerField(verbose_name='Номер телефона', null=True, blank=True)
 
     # Так же мы нуждаемся в поле, с помощью которого будем иметь возможность

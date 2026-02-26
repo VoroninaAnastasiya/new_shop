@@ -1,15 +1,73 @@
+from idlelib.rpc import request_queue
 from logging import raiseExceptions
+
+from django.shortcuts import redirect
 from rest_framework.generics import RetrieveUpdateAPIView
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.core.serializers import serialize
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegistrationSerializer, UserSerializer, LoginSerializer
 from .renderers import UserJSONRenderer
+
+
+class LoginHTMLView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    permission_classes = [AllowAny]
+    template_name = 'login.html'
+
+    def get(self, request):
+        return Response({})
+
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, email=email, password=password)
+        if user:
+            login(request,user)
+            return redirect('main_page')
+
+        return Response({'error': "Введены неверные логин или пароль"}, template_name='login.html')
+
+
+class LogoutHTMLView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        logout(request)
+        return redirect('main_page')
+
+
+class RegistrationHTMLView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    permission_classes = [AllowAny]
+    template_name = 'register.html'
+
+    def get(self, request):
+        return Response({})
+
+    def post(self, request):
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if User.objects.filter(email=email).exists(): return Response({
+            'error': 'Email уже используется'},template_name='register.html')
+
+        user = User.objects.create_user(
+            email=email,
+            username=username,
+            password=password
+        )
+
+        login(request, user)
+        return redirect('main_page')
 
 
 class RegistrationAPIView(APIView):

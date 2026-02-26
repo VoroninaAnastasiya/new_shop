@@ -1,6 +1,7 @@
 from django.urls import path
 
-from user.views import ProfileUserCreateAPIView, ProfileUserListAPIView, ProfileUserView
+from user import views
+from user.views import ProfileUserCreateAPIView, ProfileUserListAPIView, ProfileUserView, ProfileHTMLAPIView
 
 urlpatterns = [
     # path('list_users/', UserAPIView.as_view(), name= 'users'),
