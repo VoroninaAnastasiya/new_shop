@@ -151,7 +151,7 @@ AUTH_USER_MODEL = 'user_auth.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+'rest_framework.authentication.SessionAuthentication',
         'user_auth.backends.JWTAuthentication',
     ),
     'DEFAULT_RENDERER_CLASSES': [
@@ -190,3 +190,22 @@ EMAIL_USE_SSL = True  # для Яндекса лучше SSL
 EMAIL_HOST_USER = 'voronina-nastya.97@yandex.ru'
 EMAIL_HOST_PASSWORD = 'ayhxspezvfcfhoum'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+RABBITMQ = {
+    'RABBIT_HOST': 'localhost',
+    'RABBIT_PORT': 5672,
+    'RABBIT_USER': 'guest',
+    'RABBIT_PASSWORD': 'guest',
+    'RABBIT_VHOST': '/',
+}
+
+DISABLE_RABBITMQ = False
+
+
+SESSION_COOKIE_AGE = 1209600  # 2 недели (по умолчанию)
+SESSION_COOKIE_SECURE = False  # для локальной разработки должно быть False, иначе cookie не будет работать по HTTP
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # по умолчанию

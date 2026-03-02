@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Оформление заказа</h1>
+
+<div class="checkout-container">
+
+    <h2>Ваш заказ</h2>
+    <div class="checkout-items">
+        {% for item in cart_items %}
+            <div class="checkout-item">
+                <span>{{ item.product.name }}</span>
+                <span>{{ item.quantity }} шт.</span>
+                <span>{{ item.get_total_price }} ₽</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h2>Данные для доставки</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Город:</label>
+        <input type="text" name="city" required>
+
+        <label>Адрес:</label>
+        <input type="text" name="address" required>
+
+        <label>Тип доставки:</label>
+        <select name="delivery_type" required>
+            <option value="pickup">Самовывоз</option>
+            <option value="courier">Курьер</option>
+        </select>
+
+        <label>Дата доставки (если курьер):</label>
+        <input type="date" name="delivery_data">
+
+        <label>Время доставки (если курьер):</label>
+        <input type="time" name="delivery_time">
+
+        <label>Комментарий:</label>
+        <textarea name="comment"></textarea>
+
+        <label>Способ оплаты:</label>
+        <select name="payment_type" required>
+            <option value="card">Картой онлайн</option>
+            <option value="cash">Наличными</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">
+            Подтвердить заказ
+        </button>
+    </form>
+
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from brand.models import Brand
 from category.models import Category
@@ -16,7 +16,7 @@ def test(request):
 
 
 class MainPageHTMLAPIView(generics.ListAPIView):
-    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    renderer_classes = [TemplateHTMLRenderer]
     permission_classes = []
     template_name = 'main_page.html'
 
@@ -32,21 +32,7 @@ class MainPageHTMLAPIView(generics.ListAPIView):
             'categories': categories,
             'brands': brands,
         })
-#Было изначально так:
-#def main_page(request):
-    #products = Product.objects.all()
-    #categories = Category.objects.all()
-    #brands = Brand.objects.all()
 
-    #return render(request, 'main_page.html', {
-        #'products': products,
-        #'categories': categories,
-        #'brands': brands,
-    #})
-
-#def products_page(request):
-    #products = Product.objects.all()
-    #return render(request, 'products.html', {'products': products})
 
 # Create your views here.
 class ProductsAPIView(generics.ListAPIView):
@@ -75,3 +61,12 @@ class ProductAvailabilityView(APIView):
             'name': product.name,
             'available_quantity': product.available_quantity
         })
+
+
+class ProductDetailHTMLView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'product_detail.html'
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        return Response({'product': product})

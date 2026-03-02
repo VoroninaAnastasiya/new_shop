@@ -20,11 +20,12 @@
     </div>
     {% endfor %}
 
-    <div class="cart-total">
-        <h2>Итого: {{ total_price }} ₽</h2>
-        <a href="/orders/create/" class="btn">Оформить заказ</a>
+    <div class="cart-summary">
+        <p class="total">Итого: {{ total_price }} ₽</p>
+        <a href="{% url 'checkout_page' %}" class="btn btn-primary">
+            Оформить заказ
+        </a>
     </div>
-
 </div>
 
 {% else %}

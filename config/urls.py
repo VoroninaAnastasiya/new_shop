@@ -33,6 +33,7 @@ from cart.views import CartHTMLDetailView
 from product.views import MainPageHTMLAPIView
 from user.views import ProfileHTMLAPIView
 from user_auth.views import LoginHTMLView, LogoutHTMLView, RegistrationHTMLView
+from utils.views import test_rabbit, test_rabbit_reciver
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -50,11 +51,14 @@ urlpatterns = [
     #Главная страница
     path('', MainPageHTMLAPIView.as_view(), name='main_page'),
     path('brands/', include('brand.urls'), name='Бренды'),
+    path('orders/', include('order.urls')),
     #path('users/', include('user.urls'), name='Пользователи'),
     #path('user/', include('user.urls')),
     path('categories/', include('category.urls'), name='Категории товаров'),
     path('cart/', include('cart.urls')),
     path('documents/', include('documents.urls')),
+    path('test-rabbit/', test_rabbit),
+    path('test-rabbit/reciver/', test_rabbit_reciver),
 
     path('login/', LoginHTMLView.as_view(), name='login_page'),
     path('logout/', LogoutHTMLView.as_view(), name='logout_page'),
@@ -62,7 +66,6 @@ urlpatterns = [
     path('profile/', ProfileHTMLAPIView.as_view(),name='profile_page'),
 
     path('person_cart/', CartHTMLDetailView.as_view(), name='cart_page'),
-    #path('login/', ProfileHTMLAPIView.as_view(), name='profile_page'),
 # API
     path('api/', include('user_auth.urls', namespace='authentication')),
     path('api/products/', include('product.urls'), name='Товары'),

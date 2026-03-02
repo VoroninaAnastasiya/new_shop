@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
@@ -8,8 +9,27 @@ from rest_framework.views import APIView
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Order
 
-from django.shortcuts import render
+@login_required
+def payment_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if request.method == 'POST':
+        # здесь можно добавить логику оплаты
+        return redirect('success_page', order_id=order.id)
+
+    return render(request, 'payment.html', {'order': order})
+
+
+@login_required
+def success_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'success.html', {'order': order})
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()

@@ -681,7 +681,7 @@ def send_updated_user(origin: Origin, user_id: UUID, data):
 
 def send_update_email_to_documents(look_up_field: str, data):
     data = {
-        'url': f'/documents/users/{look_up_field}/update-email/',
+        'url': f'http://localhost:8000/documents/users/{look_up_field}/update-email/',
         'method': 'POST',
         'changes': data,
     }

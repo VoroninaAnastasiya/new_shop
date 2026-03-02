@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата заказа{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Оплата заказа</h1>
+
+<div class="payment-container">
+
+    <h2>Заказ №{{ order.id }}</h2>
+
+    <p><strong>Сумма к оплате:</strong> {{ order.total_price }} ₽</p>
+
+    <p><strong>Способ оплаты:</strong>
+        {% if order.payment_type == 'card' %}
+            Картой онлайн
+        {% else %}
+            Наличными
+        {% endif %}
+    </p>
+
+    <hr>
+
+    {% if order.payment_type == 'card' %}
+        <h3>Оплата картой</h3>
+        <p>Это демо‑страница. Здесь могла бы быть интеграция с платёжной системой.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Оплатить</button>
+        </form>
+
+    {% else %}
+        <h3>Оплата наличными</h3>
+        <p>Вы оплатите заказ при получении.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Подтвердить</button>
+        </form>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -30,10 +30,22 @@ class LoginHTMLView(APIView):
 
         user = authenticate(request, email=email, password=password)
         if user:
-            login(request,user)
-            return redirect('main_page')
+            login(request, user)
+            print(f"is_authenticated {request.user.is_authenticated}")
 
-        return Response({'error': "Введены неверные логин или пароль"}, template_name='login.html')
+
+            next_url = (
+                request.GET.get('next')
+                or request.POST.get('next')
+                or 'main_page'   # ← твоя главная HTML‑страница
+            )
+            return redirect(next_url)
+
+        return Response(
+            {'error': "Введены неверные логин или пароль"},
+            template_name='login.html'
+        )
+
 
 
 class LogoutHTMLView(APIView):

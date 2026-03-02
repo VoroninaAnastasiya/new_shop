@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Спасибо за заказ{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <h1>Спасибо за заказ!</h1>
+
+    <p>Ваш заказ №{{ order.id }} успешно оформлен.</p>
+
+    <p>Мы отправили подтверждение на вашу почту.</p>
+
+    <a href="{% url 'main_page' %}" class="btn btn-primary">
+        Вернуться в магазин
+    </a>
+
+    <a href="{% url 'orders_page' %}" class="btn btn-outline">
+        Мои заказы
+    </a>
+</div>
+{% endblock %}

@@ -30,7 +30,22 @@
         <img src="{{ product.image.url }}" alt="{{ product.name }}">
         <h3>{{ product.name }}</h3>
         <p class="price">{{ product.price }} ₽</p>
-        <a href="/product/{{ product.id }}/" class="btn">Подробнее</a>
+        <a href="{% url 'product_detail_page' product.id %}" class="btn">
+            Подробнее
+        </a>
+
+        {% if request.user.is_authenticated %}
+            <form method="post" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary">
+                    Добавить в корзину
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'login_page' %}?next={{ request.path }}" class="btn btn-outline">
+                Войти, чтобы купить
+            </a>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
