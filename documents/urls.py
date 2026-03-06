@@ -1,6 +1,7 @@
 from django.urls import path
 
-from documents.views import test_email
+from documents.views import TestEmailAPIView
+
 urlpatterns = [
-    path('test-email/', test_email, name='test_email'),
+    path('test-email/', TestEmailAPIView.as_view(), name='test_email'),
 ]

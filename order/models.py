@@ -43,7 +43,7 @@ class Order(models.Model):
         return self.total_price
 
     def save(self, *args, **kwargs):
-        self.calculate_total()
+        # self.calculate_total()
         super().save(*args, **kwargs)
         # правка от 16.02, было - super().save(update_fields=['total_price'])
 
@@ -66,7 +66,7 @@ class OrderItem(models.Model):
         return self.total_price
 
     def save(self, *args,**kwargs):  # при сохранении пересчитываем
-        self.calculate_total() #вызов calculate_total всегда будет происходить, когда создаешь
+        # self.calculate_total() #вызов calculate_total всегда будет происходить, когда создаешь
         # или обновляешь экземпляр OrderItem
         super().save(*args, **kwargs)
 

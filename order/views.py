@@ -1,4 +1,10 @@
+from django.core.mail import EmailMessage
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from user_auth.models import User
 from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
@@ -6,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+from documents.views import JinjaEmailService
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -40,7 +47,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_from_cart(self, request):
-        user = request.user
+        user = User.objects.get(id=request.user.id)
         cart_items = user.cart_items.all()
 
         if not cart_items.exists():
@@ -56,12 +63,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         delivery_data = request.data.get('delivery_data')
         delivery_time = request.data.get('delivery_time')
 
+        print("delivery_type:", delivery_type)
+        print("delivery_time:", repr(delivery_time))
+        print("delivery_data:", repr(delivery_data))
+
         if delivery_type == 'pickup':
-            if delivery_time is not None or delivery_data is not None:
-                return Response(
-                    {'error': 'delivery_time и delivery_data должны быть пустыми'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            if delivery_type == 'pickup':
+                delivery_time = None
+                delivery_data = None
 
         order = Order.objects.create(
             user=user,
@@ -80,12 +89,29 @@ class OrderViewSet(viewsets.ModelViewSet):
                 product=cart_item.product,
                 quantity=cart_item.quantity
             )
+
             #списание остатков
             cart_item.product.available_quantity -= cart_item.quantity
             cart_item.product.save()
-        cart_items.delete()
 
+        # Пересчёт суммы
+        order.total_price = sum(item.product.price * item.quantity for item in order.items.all())
+        order.save()
+
+        cart_items.delete()
+        # Отправка письма
+        JinjaEmailService( template_name='test.jinja',
+                           context={'user': user, 'order': order},
+                           to_email='voronina-nastya.97@yandex.ru'
+        ).send('Ваш заказ оформлен')
         serializer = self.get_serializer(order)
+
+        #     'Тестовое письмо',
+        #     'Поздравляем! Ваш заказ оформлен',
+        #     settings.EMAIL_HOST_USER,
+        #     ['voronina-nastya.97@yandex.ru'],
+        #     fail_silently=False,
+        # )
         #! rabbitmq отправка на почту html о созданном заказе. rabbitmq подключение,
         # потом в отдельном файле делаешь функцию которая будет отправлять сообщение на почту.
         # Пример rabbitmq в checkin-core проекте
@@ -99,6 +125,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         # }
         # pusher.send(entry_form_data, exchange, routing_key)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+def send_order_email(order):
+    service = JinjaEmailService(
+        template_name='emails/order_success.jinja',
+        context={'order': order, 'user': order.user},
+        to_email='voronina-nastya.97@yandex.ru', # тест
+    )
+    service.send(f'Ваш заказ №{order.id} успешно оформлен')
 
 
 class OrderHTMLAPIView(APIView):

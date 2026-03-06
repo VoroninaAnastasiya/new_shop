@@ -67,7 +67,8 @@ TEMPLATES = [
 # Jinja2
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [BASE_DIR / 'templates_jinja'], # папка для Jinja-шаблонов '
+        'DIRS':
+            [BASE_DIR / 'templates_jinja'], # папка для Jinja-шаблонов '
         'APP_DIRS': False,
         'OPTIONS': { 'environment': 'config.jinja2.environment', # создадим файл ниже
         },

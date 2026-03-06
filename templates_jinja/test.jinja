@@ -1,2 +1,18 @@
-<h1>Hello Jinja2</h1>
-<p>{{ 2 + 2 }}</p>
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial; background: #f5f6fa; padding: 20px;">
+    <div style="background: white; padding: 20px; border-radius: 8px;">
+        <h2>Спасибо за ваш заказ!</h2>
+
+        <p>Здравствуйте, {{ user.first_name or user.username }}!</p>
+
+        <p>Ваш заказ №{{ order.id }} успешно оформлен.</p>
+
+        <p><strong>Сумма заказа:</strong> {{ order.total_price }} ₽</p>
+
+        <p>Мы уже начали обработку вашего заказа.</p>
+
+        <p style="margin-top: 20px;">С уважением,<br>Команда ShopStyle</p>
+    </div>
+</body>
+</html>
