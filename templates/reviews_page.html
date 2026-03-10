@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Отзывы{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Отзывы</h1>
+
+<div class="reviews-container">
+    {% for review in reviews %}
+        <div class="review-card">
+            <p class="review-name">{{ review.name }}</p>
+            <p class="review-text">{{ review.text }}</p>
+            <p class="review-date">{{ review.created_at|date:"d.m.Y" }}</p>
+        </div>
+    {% empty %}
+        <p>Пока нет отзывов.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

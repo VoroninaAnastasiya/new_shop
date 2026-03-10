@@ -37,7 +37,7 @@ class LoginHTMLView(APIView):
             next_url = (
                 request.GET.get('next')
                 or request.POST.get('next')
-                or 'main_page'   # ← твоя главная HTML‑страница
+                or 'home_page'   # ← твоя главная HTML‑страница
             )
             return redirect(next_url)
 
@@ -53,7 +53,7 @@ class LogoutHTMLView(APIView):
 
     def get(self, request):
         logout(request)
-        return redirect('main_page')
+        return redirect('home_page')
 
 
 class RegistrationHTMLView(APIView):
@@ -79,7 +79,7 @@ class RegistrationHTMLView(APIView):
         )
 
         login(request, user)
-        return redirect('main_page')
+        return redirect('home_page')
 
 
 class RegistrationAPIView(APIView):

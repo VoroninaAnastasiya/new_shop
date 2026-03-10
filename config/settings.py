@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'cart',
     'order',
     'documents',
+    'reviews',
 ]
 
 MIDDLEWARE = [
@@ -210,3 +211,6 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # по умолчанию
+
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False

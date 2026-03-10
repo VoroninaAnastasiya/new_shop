@@ -1,22 +1,53 @@
 {% extends 'base.html' %}
 
+{% block back_button %}
+<a href="{% url 'home_page' %}" class="btn btn-secondary back-btn">← Назад</a>
+{% endblock %}
+
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
 <h1 class="page-title">Корзина</h1>
-
+{% csrf_token %}
 {% if cart_items %}
 <div class="cart-container">
 
     {% for item in cart_items %}
     <div class="cart-item">
+
         <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+
         <div class="cart-item-info">
             <h3>{{ item.product.name }}</h3>
             <p>Цена: {{ item.product.price }} ₽</p>
-            <p>Количество: {{ item.quantity }}</p>
+
+            <div class="quantity-controls">
+
+                <button class="btn-small"
+                        data-action="decrease"
+                        data-id="{{ item.id }}">
+                    −
+                </button>
+
+                <span class="quantity-number" id="qty-{{ item.id }}">
+                    {{ item.quantity }}
+                </span>
+
+                <button class="btn-small"
+                        data-action="increase"
+                        data-id="{{ item.id }}">
+                    +
+                </button>
+
+            </div>
         </div>
-        <a href="/cart/remove/{{ item.id }}/" class="btn btn-outline">Удалить</a>
+
+        <button class="btn btn-outline remove-btn"
+                data-action="remove"
+                data-id="{{ item.id }}">
+            ×
+        </button>
+
     </div>
     {% endfor %}
 
@@ -26,10 +57,45 @@
             Оформить заказ
         </a>
     </div>
+
 </div>
 
 {% else %}
 <p>Корзина пуста</p>
 {% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("click", async function(e) {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+
+    e.preventDefault();
+
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+
+    const url = `/cart/cart-items/${id}/${action}/`;
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+        }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (data.quantity !== undefined) {
+        document.getElementById(`qty-${id}`).textContent = data.quantity;
+    }
+
+    if (data.deleted) {
+        location.reload();
+    }
+});
+</script>
 
 {% endblock %}

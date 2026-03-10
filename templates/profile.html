@@ -1,28 +1,76 @@
 {% extends 'base.html' %}
-
-{% block title %}Мои заказы{% endblock %}
+{% block back_button %}
+    <a href="{% url 'home_page' %}" class="btn btn-secondary">← Назад</a>
+{% endblock %}
+{% block title %}Профиль{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Мои заказы</h1>
+<h1 class="page-title">Мой профиль</h1>
 
-{% if orders %}
-<div class="orders-list">
+<div class="profile-container">
 
-    {% for order in orders %}
-    <div class="order-card">
-        <h3>Заказ №{{ order.id }}</h3>F
-        <p><strong>Дата:</strong> {{ order.created_at }}</p>
-        <p><strong>Статус:</strong> {{ order.status }}</p>
-        <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
-
-        <a href="/orders/{{ order.id }}/" class="btn btn-outline">Подробнее</a>
+    <div class="profile-avatar">
+        {% if profile.image %}
+            <img src="{{ profile.image.url }}" alt="Аватар">
+        {% else %}
+            <div class="avatar-placeholder">Нет фото</div>
+        {% endif %}
     </div>
-    {% endfor %}
 
+    <div class="profile-info">
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Имя пользователя:</strong> {{ request.user.username }}</p>
+
+        {% if profile.phone %}
+            <p><strong>Телефон:</strong> {{ profile.phone }}</p>
+        {% endif %}
+
+        {% if profile.address %}
+            <p><strong>Адрес:</strong> {{ profile.address }}</p>
+        {% endif %}
+    </div>
 </div>
 
-{% else %}
-<p>У вас пока нет заказов</p>
+<div class="profile-actions" style="margin-top: 20px;">
+    <a href="?edit=data" class="btn btn-outline">Изменить данные</a>
+    <a href="?edit=avatar" class="btn btn-outline">Поменять аватар</a>
+</div>
+
+<hr style="margin: 25px 0;">
+
+{% if request.GET.edit == 'data' %}
+<h2>Редактирование данных</h2>
+<form method="post">
+    {% csrf_token %}
+
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ request.user.email }}" required>
+
+    <label>Имя пользователя:</label>
+    <input type="text" name="username" value="{{ request.user.username }}" required>
+
+    <button type="submit" name="action" value="update_data" class="btn btn-primary">
+        Сохранить
+    </button>
+</form>
 {% endif %}
+
+{% if request.GET.edit == 'avatar' %}
+<h2>Поменять аватар</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Новый аватар:</label>
+    <input type="file" name="image" required>
+
+    <button type="submit" name="action" value="update_avatar" class="btn btn-primary">
+        Загрузить
+    </button>
+</form>
+{% endif %}
+
+<a href="{% url 'orders_page' %}" class="btn btn-outline" style="margin-top: 20px;">
+    Мои заказы
+</a>
 
 {% endblock %}

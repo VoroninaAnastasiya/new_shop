@@ -29,8 +29,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from brand.views import BrandsHTMLView, BrandProductsHTMLView
 from cart.views import CartHTMLDetailView
-from product.views import MainPageHTMLAPIView
+from order.views import OrderHTMLAPIView
+from product.views import MainPageHTMLAPIView, HomePageView, ProductsPageView, ProductDetailHTMLView
 from user.views import ProfileHTMLAPIView
 from user_auth.views import LoginHTMLView, LogoutHTMLView, RegistrationHTMLView
 from utils.views import test_rabbit, test_rabbit_reciver
@@ -47,44 +49,50 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('products/', include('product.urls',)),
-    #Главная страница
-    path('', MainPageHTMLAPIView.as_view(), name='main_page'),
-    path('brands/', include('brand.urls'), name='Бренды'),
-    path('orders/', include('order.urls')),
-    #path('users/', include('user.urls'), name='Пользователи'),
-    #path('user/', include('user.urls')),
-    path('categories/', include('category.urls'), name='Категории товаров'),
-    path('cart/', include('cart.urls')),
-    path('documents/', include('documents.urls')),
-    path('test-rabbit/', test_rabbit),
-    path('test-rabbit/reciver/', test_rabbit_reciver),
 
+    # Главная страница
+    path('', HomePageView.as_view(), name='home_page'),
+
+    # Товары
+    path('products/', ProductsPageView.as_view(), name='products_page'),
+    path('products/<int:pk>/', ProductDetailHTMLView.as_view(), name='product_detail_page'),
+
+    # Категории и бренды
+    path('categories/', include('category.urls')),
+    path('brands/', BrandsHTMLView.as_view(), name='brands_page'),
+    path('brands/<int:pk>/', BrandProductsHTMLView.as_view(), name='brand_products_page'),
+
+    # Корзина
+    path('cart/', include('cart.urls')),
+
+    # Отзывы
+    path('reviews/', include('reviews.urls')),
+
+    # Заказы
+    path('orders/', OrderHTMLAPIView.as_view(), name='orders_page'),
+    path('orders/', include('order.urls')),  # API
+
+    # Профиль
+    path('profile/', ProfileHTMLAPIView.as_view(), name='profile_page'),
+
+    # Аутентификация
     path('login/', LoginHTMLView.as_view(), name='login_page'),
     path('logout/', LogoutHTMLView.as_view(), name='logout_page'),
     path('register/', RegistrationHTMLView.as_view(), name='register_page'),
-    path('profile/', ProfileHTMLAPIView.as_view(),name='profile_page'),
+    # path('products/', ProductsPageView.as_view(), name='products_page'),
 
-    path('person_cart/', CartHTMLDetailView.as_view(), name='cart_page'),
-# API
+    # API
     path('api/', include('user_auth.urls', namespace='authentication')),
-    path('api/products/', include('product.urls'), name='Товары'),
+    path('api/products/', include('product.urls')),
     path('api/cart/', include('cart.urls')),
     path('api/orders/', include('order.urls')),
-# JWT
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # логин
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # обновление
-# Swagger
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
-            schema_view.without_ui(cache_timeout=0),
-            name='schema-json'),
+
+    # Swagger
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
-
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

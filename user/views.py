@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.decorators import permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, permissions
@@ -18,8 +18,8 @@ from .serializers import ProfileUserSerializer
 #     queryset = User.objects.all()
 #     serializer_class = UserSerializer
 class ProfileHTMLAPIView(APIView):
-    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    #permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    permission_classes = [permissions.IsAuthenticated]
     template_name = 'profile.html'
 
     def get(self, request):
@@ -28,7 +28,27 @@ class ProfileHTMLAPIView(APIView):
                 'profile': 'no profile' }
             )
         profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)
-        return Response( {"profile": profile})
+        return Response( {"profile": profile,
+                          'user': request.user
+                          })
+
+    def post(self, request):
+        user = request.user
+        profile, _ = ProfileUser.objects.get_or_create(user_profile=user)
+
+        action = request.POST.get('action')
+
+        if action == 'update_data':
+            user.email = request.POST.get('email')
+            user.username = request.POST.get('username')
+            user.save()
+
+        if action == 'update_avatar' and 'image' in request.FILES:
+            profile.image = request.FILES['image']
+            profile.save()
+
+        return redirect('profile_page')
+
 
 #def profile_view(request):
     #profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)

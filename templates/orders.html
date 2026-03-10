@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block back_button %}
+    <a href="{% url 'home_page' %}" class="btn btn-secondary back-btn">← Назад</a>
+{% endblock %}
 
 {% block title %}Мои заказы{% endblock %}
 
@@ -15,7 +18,8 @@
         <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
         <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
 
-        <a href="/orders/{{ order.id }}/" class="btn btn-outline">Подробнее</a>
+        <a href="{% url 'order_detail_page' order.id %}" class="btn btn-outline">Подробнее</a>
+
     </div>
     {% endfor %}
 

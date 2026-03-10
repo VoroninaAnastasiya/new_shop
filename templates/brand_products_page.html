@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ brand.name }}{% endblock %}
+
+{% block content %}
+<a href="{% url 'brands_page' %}" class="btn btn-secondary">← Назад</a>
+
+<h1 class="page-title">{{ brand.name }}</h1>
+
+{% if brand.image %}
+    <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="brand-logo">
+{% endif %}
+
+{% if brand.description %}
+    <p class="brand-description">{{ brand.description }}</p>
+{% endif %}
+
+<h2>Товары бренда</h2>
+
+<div class="products-grid">
+    {% for product in products %}
+        <div class="product-card">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <h3>{{ product.name }}</h3>
+            <p class="price">{{ product.price }} ₽</p>
+
+            <a href="{% url 'product_detail_page' product.id %}" class="btn btn-outline">
+                Подробнее
+            </a>
+
+            {% if request.user.is_authenticated %}
+              <form method="post" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="add-to-cart-mini" title="Добавить в корзину">+</button>
+              </form>
+            {% else %}
+              <a href="{% url 'login_page' %}?next={{ request.path }}"
+                 class="add-to-cart-mini login-mini"
+                 title="Войти, чтобы добавить в корзину">+</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

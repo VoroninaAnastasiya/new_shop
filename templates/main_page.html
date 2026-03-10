@@ -3,19 +3,56 @@
 {% block title %}Каталог товаров{% endblock %}
 
 {% block content %}
-<h1>Каталог товаров</h1>
+<h1 class="page-title">Каталог товаров</h1>
 
+{# Категории и бренды, если нужны на главной #}
+{% if categories %}
+    <h2>Категории</h2>
+    <div class="categories-grid">
+        {% for category in categories %}
+            <a href="/categories/{{ category.id }}/" class="category-card">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if brands %}
+    <h2>Бренды</h2>
+    <div class="brands-grid">
+        {% for brand in brands %}
+            <a href="{% url 'brand_products_page' brand.id %}" class="brand-card">
+                {{ brand.name }}
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<h2>Товары</h2>
 <div class="products-grid">
     {% for product in products %}
-    <div class="product-card">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}">
-        <h3>{{ product.name }}</h3>
-        <p class="price">{{ product.price }} ₽</p>
-        <a href="{% url 'product_detail_page' product.id %}" class="btn">Подробнее</a>
-    </div>
+        <div class="product-card">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <h3>{{ product.name }}</h3>
+            <p class="price">{{ product.price }} ₽</p>
+
+            <a href="{% url 'product_detail_page' product.id %}" class="btn btn-outline">
+                Подробнее
+            </a>
+
+            {% if request.user.is_authenticated %}
+                <form method="post" action="{% url 'add_to_cart' product.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+                        Добавить в корзину
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login_page' %}?next={{ request.path }}" class="btn btn-secondary" style="margin-top: 8px;">
+                    Войти, чтобы купить
+                </a>
+            {% endif %}
+        </div>
     {% endfor %}
 </div>
 {% endblock %}
-со страницы base - {% load static %}
-
-

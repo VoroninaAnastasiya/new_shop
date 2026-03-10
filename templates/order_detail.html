@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Заказ №{{ order.id }}{% endblock %}
+
+{% block content %}
+<a href="{% url 'orders_page' %}" class="btn btn-secondary">← Назад</a>
+
+<h1 class="page-title">Заказ №{{ order.id }}</h1>
+
+<p><strong>Дата:</strong> {{ order.created_at }}</p>
+<p><strong>Статус:</strong> {{ order.status }}</p>
+<p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
+
+<h2>Товары</h2>
+
+<div class="products-grid">
+    {% for item in items %}
+        <div class="product-card">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+            <h3>{{ item.product.name }}</h3>
+            <p>Количество: {{ item.quantity }}</p>
+            <p>Цена: {{ item.product.price }} ₽</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

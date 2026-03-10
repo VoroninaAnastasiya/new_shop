@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ShopStyle — Главная{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">Добро пожаловать в ShopStyle!</h1>
+
+<!-- Приветственный блок -->
+<section class="welcome-block">
+    <div class="welcome-text">
+        <p>
+            ShopStyle — это современный магазин брендовой одежды и аксессуаров.
+            Мы работаем с 2020 года и привозим коллекции из Европы, выбирая только
+            качественные и стильные вещи от проверенных брендов.
+        </p>
+        <p>
+            У нас вы найдёте одежду на каждый день, премиальные коллекции,
+            аксессуары и сезонные новинки. Мы следим за трендами и обновляем
+            ассортимент каждую неделю.
+        </p>
+    </div>
+
+    <div class="welcome-images-vertical">
+        <img src="{% static 'images/home/fashion1.jpg' %}" alt="Fashion 1" class="welcome-img-vertical">
+        <img src="{% static 'images/home/fashion2.jpg' %}" alt="Fashion 2" class="welcome-img-vertical">
+    </div>
+
+</section>
+
+<!-- Кнопки -->
+<div class="home-buttons">
+    <a href="{% url 'products_page' %}" class="btn">Каталог товаров</a>
+    <a href="/brands/" class="btn btn-outline">Бренды</a>
+    <a href="/reviews/" class="btn btn-outline">Отзывы</a>
+</div>
+
+<!-- Новости -->
+<section class="news-block">
+    <h2>Новости</h2>
+    <ul>
+        <li>📰 Новая коллекция весна–лето уже в продаже!</li>
+        <li>📰 Бесплатная доставка при заказе от 100 BYN</li>
+    </ul>
+</section>
+
+<!-- Акции -->
+<section class="promo-block">
+    <h2>Акции</h2>
+    <ul>
+        <li>🔥 Скидка 20% на все товары бренда Nike</li>
+        <li>🔥 2+1 на аксессуары</li>
+    </ul>
+</section>
+
+<!-- Схема проезда -->
+<section class="map-block">
+    <h2>Как нас найти</h2>
+    <iframe
+        src="https://yandex.ru/map-widget/v1/?mode=search&text=%D0%9C%D0%B8%D0%BD%D1%81%D0%BA%2C%20%D0%BF%D1%80-%D1%82%20%D0%9F%D0%BE%D0%B1%D0%B5%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%2065&z=16"
+        width="100%"
+        height="350"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</section>
+
+
+
+<!-- Соцсети -->
+<footer class="social-footer">
+    <h3>Мы в социальных сетях</h3>
+    <div class="social-links">
+        <a href="#" class="social-icon">Instagram</a>
+        <a href="#" class="social-icon">Telegram</a>
+        <a href="#" class="social-icon">TikTok</a>
+    </div>
+</footer>
+
+{% endblock %}
+

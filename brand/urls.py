@@ -1,9 +1,10 @@
 from django.urls import path
 
-from .views import BrandsAPIView
+from .views import BrandsAPIView, BrandsHTMLView, BrandProductsHTMLView
 
 urlpatterns = [
-    path('list_brands/', BrandsAPIView.as_view(), name='brands'),
+    path('', BrandsAPIView.as_view(), name='brands'),
+
 ]
 
 

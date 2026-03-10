@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Бренды{% endblock %}
+{% block back_button %}
+    <a href="{% url 'home_page' %}" class="btn btn-secondary">← Назад</a>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Все бренды</h1>
+
+<div class="products-grid">
+    {% for brand in brands %}
+        <div class="product-card">
+
+            {% if brand.image %}
+                <img src="{{ brand.image.url }}" alt="{{ brand.name }}">
+            {% else %}
+                <img src="{% static 'images/no-image.png' %}" alt="Нет изображения">
+            {% endif %}
+
+            <h3>{{ brand.name }}</h3>
+
+            <a href="{% url 'brand_products_page' brand.id %}" class="btn btn-outline">
+                Смотреть все товары
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'home_page' %}" class="btn btn-secondary" style="margin-top: 20px;">
+    ← Назад
+</a>
+{% endblock %}

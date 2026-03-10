@@ -17,12 +17,11 @@ def test(request):
 
 class MainPageHTMLAPIView(generics.ListAPIView):
     renderer_classes = [TemplateHTMLRenderer]
-    permission_classes = []
     template_name = 'main_page.html'
 
     queryset = Product.objects.all()
 
-    def list(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         products = Product.objects.all()
         categories = Category.objects.all()
         brands = Brand.objects.all()
@@ -70,3 +69,26 @@ class ProductDetailHTMLView(APIView):
     def get(self, request, pk):
         product = get_object_or_404(Product, id=pk)
         return Response({'product': product})
+
+
+class HomePageView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'home_page.html'
+
+    def get(self, request):
+        return Response({})
+
+
+class ProductsPageView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'products_page.html'
+
+    def get(self, request):
+        categories = Category.objects.all()
+        brands = Brand.objects.all()
+        products = Product.objects.all()
+        return Response({
+            'categories': categories,
+            'brands': brands,
+            'products': products
+        })

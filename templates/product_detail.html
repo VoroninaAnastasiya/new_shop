@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block back_button %}
+<a href="{% url 'home_page' %}" class="btn btn-secondary back-btn">← Назад</a>
+{% endblock %}
+
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
@@ -20,9 +24,7 @@
             <p class="stock out-of-stock">Нет в наличии</p>
         {% endif %}
 
-        <p class="description">
-            {{ product.description }}
-        </p>
+        <p class="description">{{ product.description }}</p>
 
         <div class="product-detail-actions">
 
@@ -45,12 +47,9 @@
                 </a>
             {% endif %}
 
-            <a href="{% url 'main_page' %}" class="btn btn-secondary">
-                ← Назад к каталогу
-            </a>
-
         </div>
     </div>
 
 </div>
 {% endblock %}
+

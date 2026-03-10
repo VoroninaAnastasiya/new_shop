@@ -143,3 +143,15 @@ class OrderHTMLAPIView(APIView):
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
         return Response({'orders': orders})
+
+
+class OrderDetailHTMLView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'order_detail.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        items = order.items.select_related('product')
+        return Response({'order': order, 'items': items})
+

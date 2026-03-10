@@ -12,11 +12,17 @@ from order.views import OrderViewSet
 from product.models import Product
 from .models import CartItem
 from .serializers import CartItemSerializer
+from rest_framework.decorators import action
 
+def get_cart_total(user):
+    '''Функция подсчёта общей суммы'''
+    items = CartItem.objects.filter(user=user)
+    return sum(item.get_total_price() for item in items)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request, product_id):
+    '''Добавление товара в корзину'''
     product = get_object_or_404(Product, id=product_id)
     item, created = CartItem.objects.get_or_create(
         user=request.user,
@@ -32,6 +38,7 @@ def add_to_cart(request, product_id):
 
 @login_required(login_url='login_page')
 def checkout(request):
+    '''Оформление заказа'''
     cart_items = CartItem.objects.filter(user=request.user)
 
     if not cart_items.exists():
@@ -84,6 +91,30 @@ class CartItemViewSet(viewsets.ModelViewSet):
         # метод, отвечающий за создание нового CartItem, автоматически подставляя текущего пользователя
         serializer.save(user=self.request.user)
 
+    @action(detail=True, methods=['post'])
+    def increase(self, request, pk=None):
+        item = self.get_object()
+        item.quantity += 1
+        item.save()
+        return Response({'quantity': item.quantity})
+
+    @action(detail=True, methods=['post'])
+    def decrease(self, request, pk=None):
+        item = self.get_object()
+        if item.quantity > 1:
+            item.quantity -= 1
+            item.save()
+            return Response({'quantity': item.quantity})
+        else:
+            item.delete()
+            return Response({'deleted': True})
+
+    @action(detail=True, methods=['post'])
+    def remove(self, request, pk=None):
+        item = self.get_object()
+        item.delete()
+        return Response({'deleted': True})
+
     def destroy(self, request, *args, **kwargs): #Получает элемент по его идентификатору с помощью self.get_object()
         try:
             instance = self.get_object()
@@ -93,7 +124,6 @@ class CartItemViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Элемент не найден в корзине.'},
                             status=status.HTTP_404_NOT_FOUND
             )
-
 
 
 #из-за CartHTMLDetailView этот класс не нужен, получается
