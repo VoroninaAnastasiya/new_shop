@@ -8,7 +8,10 @@
 
 {% block content %}
 <h1 class="page-title">Корзина</h1>
+
+{# CSRF-токен для использования в JavaScript #}
 {% csrf_token %}
+
 {% if cart_items %}
 <div class="cart-container">
 
@@ -77,25 +80,44 @@ document.addEventListener("click", async function(e) {
     const action = btn.dataset.action;
     const id = btn.dataset.id;
 
-    const url = `/cart/cart-items/${id}/${action}/`;
+    // Получаем CSRF-токен из скрытого поля, которое Django гарантированно создаёт
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
+    // Убираем возможный концевой слеш и добавляем сегменты
+    const basePath = window.location.pathname.replace(/\/$/, ''); // убираем концевой слеш
+    const url = `${basePath}/cart-items/${id}/${action}/`;
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+            }
+        });
+
+        if (!response.ok) {
+            // Если статус не 2xx, бросаем ошибку
+            throw new Error(`HTTP error ${response.status}`);
         }
-    });
 
-    const data = await response.json().catch(() => ({}));
+        const data = await response.json();
 
-    if (data.quantity !== undefined) {
-        document.getElementById(`qty-${id}`).textContent = data.quantity;
-    }
+        // Обновляем количество на странице, если оно вернулось
+        if (data.quantity !== undefined) {
+            const qtySpan = document.getElementById(`qty-${id}`);
+            if (qtySpan) {
+                qtySpan.textContent = data.quantity;
+            }
+        }
 
-    if (data.deleted) {
-        location.reload();
+        // Если товар удалён (decrease при quantity=1 или remove) — перезагружаем страницу
+        if (data.deleted) {
+            location.reload();
+        }
+    } catch (error) {
+        console.error('Ошибка при выполнении действия:', error);
+        alert('Не удалось выполнить действие. Проверьте консоль.');
     }
 });
 </script>
-
 {% endblock %}
