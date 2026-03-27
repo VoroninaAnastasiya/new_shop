@@ -6,33 +6,58 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.utils.representation import serializer_repr
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.shortcuts import render
 
 from .models import ProfileUser
 from .serializers import ProfileUserSerializer
 
 
-# Create your views here.
-# class UserAPIView(generics.ListCreateAPIView): не получится тк нам нужно получить один профиль
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
 class ProfileHTMLAPIView(APIView):
+    """
+    ProfileHTMLAPIView для отображения и редактирования профиля пользователя.
+
+    Назначение:
+    - отображает страницу профиля (GET);
+    - позволяет обновлять данные пользователя и аватарку через HTML‑форму (POST);
+    - использует Django‑сессию, а не JWT.
+
+    Особенности:
+    - renderer_classes = TemplateHTMLRenderer — возвращает HTML, а не JSON;
+    - get_or_create гарантирует, что у каждого пользователя всегда есть профиль;
+    - action в POST определяет, что именно обновляется: данные или аватарка.
+
+    Использование:
+    - применяется для обычного веб‑интерфейса (не API);
+    - работает только для аутентифицированных пользователей.
+    """
+
     renderer_classes = [TemplateHTMLRenderer]
     permission_classes = [permissions.IsAuthenticated]
     template_name = 'profile.html'
 
     def get(self, request):
-        if not request.user.is_authenticated: #для тестирования
-            return Response({
-                'profile': 'no profile' }
-            )
+        """ Отображает страницу профиля.
+
+            Логика:
+            - проверяет аутентификацию (для тестирования);
+            - получает или создаёт профиль пользователя;
+            - передаёт в шаблон объект профиля и пользователя."""
+
         profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)
         return Response( {"profile": profile,
                           'user': request.user
                           })
 
-    def post(self, request):
+    def post(self, request):#TODO PATCH метод должен быть!!!!
+        """Обрабатывает отправку HTML‑формы профиля.
+
+        Поддерживает два действия:
+        - update_data — обновление email и username;
+        - update_avatar — загрузка новой аватарки.
+
+        После обновления выполняет redirect на страницу профиля."""
+
         user = request.user
         profile, _ = ProfileUser.objects.get_or_create(user_profile=user)
 
@@ -50,33 +75,33 @@ class ProfileHTMLAPIView(APIView):
         return redirect('profile_page')
 
 
-#def profile_view(request):
-    #profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)
-    #return render(request, 'profile.html', {"profile": profile})
-    #return render(request, 'profile.html') #! TODO rest frame применить,  permission_classes = [permissions.IsAuthenticated]
-
-class ProfileUserListAPIView(generics.ListAPIView):
-    #permission_classes = [IsAuthenticated] # TODO позже переделать на permission_classes = [IsAdminUser], доступ только у админа
-    queryset = ProfileUser.objects.all()
-    serializer_class = ProfileUserSerializer
-
-
-class ProfileUserCreateAPIView(generics.CreateAPIView):
-    queryset = ProfileUser.objects.all()
-    serializer_class = ProfileUserSerializer
-
-
 class ProfileUserView(APIView):
-    #permission_classes = [IsAuthenticated]
+    """
+    API для работы с профилем текущего пользователя.
+
+    Поддерживает:
+    - GET — получение профиля;
+    - PUT — частичное обновление профиля (включая аватарку);
+    - DELETE — удаление аватарки.
+
+    Особенности:
+    - MultiPartParser и FormParser позволяют принимать файлы (image);
+    - get_or_create гарантирует, что профиль существует;
+    - partial=True в PUT позволяет обновлять только переданные поля.
+    """
+
+    permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser] #позволяет принимать запросы с файлами (multipart/form-data).
     # Без этого картинка просто не попадёт в request.data
 
     def get(self, request):
+        '''Возвращает профиль текущего пользователя.'''
         profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)
         serializer = ProfileUserSerializer(profile)
         return Response(serializer.data)
 
     def put(self,request): #! TODO доработать метод, чтобы картинка обновлялась
+        '''Частично обновляет профиль пользователя.'''
         profile, _ = ProfileUser.objects.get_or_create(user_profile=request.user)
         serializer = ProfileUserSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
@@ -85,10 +110,12 @@ class ProfileUserView(APIView):
         return Response(serializer.errors, status=400)
 
     def delete(self, request):
+        '''Удаляет аватарку пользователя.
+        Если аватарки нет — возвращает ошибку; удаляет файл с диска через image.delete();
+        очищает поле image в базе; возвращает статус 204 (успешное удаление без контента)'''
         profile, _ = ProfileUser.objects.get_or_create(
             user_profile=request.user) #возвращает кортеж из двух значений: (объект, создан_ли_он)
         # _ — это общепринятое обозначение «переменная, которую мы игнорируем»
-        # Если аватарки нет — возвращаем сообщение
         if not profile.image:
             return Response({"detail": "Аватарка уже отсутствует."},
                             status=400)

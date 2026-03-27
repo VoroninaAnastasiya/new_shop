@@ -6,12 +6,26 @@ from documents.services import JinjaEmailService
 
 
 class TestEmailAPIView(APIView):
+    """ Тестовый API‑эндпоинт для проверки отправки HTML‑писем.
+
+        Назначение:
+        - создаёт экземпляр JinjaEmailService;
+        - рендерит шаблон test.jinja;
+        - отправляет письмо на указанный email;
+        - возвращает JSON‑ответ об успешной отправке.
+
+        Особенности:
+        - доступен только авторизованным пользователям (IsAuthenticated);
+        - метод GET перенаправляет на POST для удобства тестирования;
+        - используется для проверки корректности шаблонов, SMTP‑настроек и сервиса отправки.
+        """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return self.post(request)
 
     def post(self, request):
+        """создаёт сервис-рендерит шаблон test.jinja-отправляет письмо-возвращает JSON‑ответ,"""
         service = JinjaEmailService(
             template_name='test.jinja',
             context={
@@ -24,27 +38,3 @@ class TestEmailAPIView(APIView):
         service.send('Тестовое письмо')
 
         return Response({"message": "Письмо отправлено!"})
-
-
-from django.core.mail import send_mail
-from django.conf import settings
-from django.http import HttpResponse
-
-
-# def test_email(request):#TODO переделать  на drf, post, is auth,
-#     send_mail(
-#         'Тестовое письмо',
-#         'Поздравляем! Ваш заказ оформлен',
-#         settings.EMAIL_HOST_USER,
-#         ['voronina-nastya.97@yandex.ru'],
-#         fail_silently=False,
-#     )
-#     return HttpResponse("Письмо отправлено!") # старое
-
-
-
-
-
-
-
-

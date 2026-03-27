@@ -6,14 +6,23 @@ from .models import User
 
 
 class  RegistrationSerializer(serializers.ModelSerializer):
-    """ Сериализация регистрации пользователя и создания нового. """
+    """ Сериализатор для регистрации нового пользователя.
+
+    Сериализация регистрации пользователя и создания нового.
+    Принимает email, username, password, name, lastname, phone,
+    валидирует их согласно правилам модели и DRF.
+    Вызывает User.objects.create_user() и возвращает созданного пользователя.
+
+    Особенности:
+    - поле password write_only=True — пароль не возвращается клиенту;
+    - минимальная длина пароля — 8 символов;
+    - сериализатор возвращает объект пользователя, но не токены
+      (токены создаются во view через RefreshToken.for_user())."""
+
 
     # пароль содержит не менее 8 символов, не более 128,
     # и так же он не может быть прочитан клиентской стороной
-
     password = serializers.CharField(max_length=128, min_length=8,write_only=True)
-
-
     # Клиент не должен иметь возможность отправлять токен вместе с
     # запросом на регистрацию. Сделаем его доступным только на чтение.
 
@@ -23,14 +32,24 @@ class  RegistrationSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'password', 'name', 'lastname', 'contact_phone')
 
     def create(self, validated_data):
-        # Используем метод create_user, который мы
-        # написали ранее, для создания нового пользователя.
+        '''Создаёт нового пользователя через кастомный менеджер UserManager.'''
+        # Используем метод create_user, который мы написали ранее, для создания нового пользователя.
         return User.objects.create_user(**validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """ Ощуществляет сериализацию и десериализацию объектов User. """
-    # Пароль должен содержать от 8 до 128 символов.
+    """ Сериализатор для чтения и обновления данных пользователя.
+
+    Назначение:
+    - сериализует профиль пользователя (email, username, имя, телефон и т.д.);
+    - позволяет частично обновлять данные (используется с partial=True);
+    - при обновлении пароля вызывает set_password(), чтобы пароль
+      был захэширован, а не сохранён в открытом виде.
+
+    - password write_only=True — пароль не возвращается клиенту;
+    - token read_only=True — поле оставлено для совместимости,
+    но фактически токены создаются через SimpleJWT во view."""
+
     token = serializers.CharField(max_length=128, min_length=8, read_only=True)
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     class Meta:
@@ -38,7 +57,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'username', 'name', 'lastname', 'contact_phone', 'token', 'password') #в примере без токена
 
     def update(self, instance, validated_data):
-        """ Выполняет обновление User. """
+        """ Выполняет обновление User.
+        Логика:
+        - извлекает пароль, если он передан;
+        - обновляет остальные поля через setattr();
+        - если пароль передан — хэширует его через set_password();
+        - сохраняет изменения.
+
+        Возвращает обновлённый объект User."""
+
         password = validated_data.pop('password', None)
 
         for key, value in validated_data.items():
@@ -46,14 +73,30 @@ class UserSerializer(serializers.ModelSerializer):
         # в текущий экземпляр User по одному.
 
         if password is not None:
-            instance.set_password(password) # 'set_password()' решает все вопросы, связанные с безопасностью
-            # set_password() не сохраняет модель.
+            instance.set_password(password) # 'set_password()' - встроенный механизм Django для безопасного
+            # хэширования паролей. Он не сохраняет пароль в открытом виде, set_password() не сохраняет модель.
             instance.save()
 
         return instance
 
 
 class LoginSerializer(serializers.Serializer):
+    """Сериализатор для аутентификации пользователя и выдачи JWT‑токенов.
+
+        Назначение:
+        - принимает email и пароль;
+        - проверяет корректность данных;
+        - вызывает authenticate(), который использует кастомный USERNAME_FIELD=email;
+        - проверяет, что пользователь активен;
+        - создаёт пару токенов (refresh + access) через SimpleJWT;
+        - возвращает email, username и токены.
+
+        Особенности:
+        - username read_only=True — клиент не передаёт его при логине;
+        - password write_only=True — пароль не возвращается клиенту;
+        - access и refresh read_only=True — сериализатор сам их формирует.
+        """
+
     email = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(max_length=100, write_only=True)
@@ -61,6 +104,22 @@ class LoginSerializer(serializers.Serializer):
     refresh = serializers.CharField(read_only=True)
 
     def validate(self, data):
+        '''Проверяет корректность логина и создаёт JWT‑токены.
+        Логика:
+        - убеждается, что email и password переданы;
+        - вызывает authenticate(email, password);
+        - проверяет, что пользователь существует и активен;
+        - создаёт refresh и access токены через RefreshToken.for_user();
+        - возвращает словарь данных, который попадёт в Response.
+
+        Возвращает:
+        {
+            'email': user.email,
+            'username': user.username,
+            'access': <access_token>,
+            'refresh': <refresh_token>
+        }'''
+
         # В методе validate мы убеждаемся, что текущий экземпляр
         # LoginSerializer значение valid. В случае входа пользователя в систему
         # это означает подтверждение того, что присутствуют адрес электронной

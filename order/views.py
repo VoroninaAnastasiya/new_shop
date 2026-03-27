@@ -1,9 +1,3 @@
-from django.core.mail import EmailMessage
-
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from user_auth.models import User
 from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
@@ -23,6 +17,18 @@ from .models import Order
 
 @login_required
 def payment_page(request, order_id):
+    """ HTML‑страница оплаты заказа.
+
+        Назначение:
+        - отображает страницу оплаты для конкретного заказа;
+        - доступна только авторизованным пользователям;
+        - используется для ручной/внутренней логики оплаты.
+
+        Логика:
+        1. Получить заказ текущего пользователя.
+        2. Если POST — выполнить оплату (логика может быть расширена).
+        3. Если GET — отобразить шаблон payment.html с данными заказа.
+        """
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
     if request.method == 'POST':
@@ -34,11 +40,26 @@ def payment_page(request, order_id):
 
 @login_required
 def success_page(request, order_id):
+    """ HTML‑страница успешной оплаты.
+
+        Назначение:
+        - отображает подтверждение успешной оплаты;
+        - показывает данные заказа пользователю.
+
+        Логика:
+        1. Получить заказ текущего пользователя.
+        2. Передать его в шаблон success.html.
+        """
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'success.html', {'order': order})
 
 
 class OrderViewSet(viewsets.ModelViewSet):
+    """ API‑вьюсет для работы с заказами.
+        Назначение:
+        - предоставляет CRUD‑операции для модели Order;
+        - использует OrderSerializer для отображения данных;
+        - доступен только авторизованным пользователям."""
     queryset = Order.objects.all()
     # как вариант можно вместо предыдущей записи сделать так - def get_queryset(self):
     # return Order.objects.filter(user=self.request.user) - чужие записи не будут видны
@@ -47,6 +68,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def create_from_cart(self, request):
+        """Создаёт заказ на основе корзины пользователя."""
         user = User.objects.get(id=request.user.id)
         cart_items = user.cart_items.all()
 
@@ -63,14 +85,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         delivery_data = request.data.get('delivery_data')
         delivery_time = request.data.get('delivery_time')
 
-        print("delivery_type:", delivery_type)
-        print("delivery_time:", repr(delivery_time))
-        print("delivery_data:", repr(delivery_data))
-
         if delivery_type == 'pickup':
-            if delivery_type == 'pickup':
-                delivery_time = None
-                delivery_data = None
+            if any([delivery_time, delivery_data]):
+                return Response({'error': 'нельзя указывать delivery_time и delivery_data'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         order = Order.objects.create(
             user=user,
@@ -82,7 +100,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             delivery_time=delivery_time,
             comment=request.data.get('comment'),
         )
-
+        # мне пиздец, надо через bulk_create для OrderItem
         for cart_item in cart_items:
             OrderItem.objects.create(
                 order=order,
@@ -90,7 +108,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 quantity=cart_item.quantity
             )
 
-            #списание остатков
+            #списываем то же в цикле...подумать как, мб через bulk_...
             cart_item.product.available_quantity -= cart_item.quantity
             cart_item.product.save()
 
@@ -105,28 +123,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                            to_email='voronina-nastya.97@yandex.ru'
         ).send('Ваш заказ оформлен')
         serializer = self.get_serializer(order)
-
-        #     'Тестовое письмо',
-        #     'Поздравляем! Ваш заказ оформлен',
-        #     settings.EMAIL_HOST_USER,
-        #     ['voronina-nastya.97@yandex.ru'],
-        #     fail_silently=False,
-        # )
-        #! rabbitmq отправка на почту html о созданном заказе. rabbitmq подключение,
-        # потом в отдельном файле делаешь функцию которая будет отправлять сообщение на почту.
-        # Пример rabbitmq в checkin-core проекте
-        # exchange = Exchange(settings.UPDATER_V2['EXCHANGE_TO_UPDATER_V2'], type='topic')
-        # pusher = RabbitMQPusher()
-        #
-        # entry_form_data = {
-        #     "url": "/documents/",
-        #     "method": "POST",
-        #     "changes": input_data
-        # }
-        # pusher.send(entry_form_data, exchange, routing_key)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 def send_order_email(order):
+    """ Отправляет письмо пользователю о том, что заказ успешно оформлен."""
     service = JinjaEmailService(
         template_name='emails/order_success.jinja',
         context={'order': order, 'user': order.user},
@@ -136,6 +136,14 @@ def send_order_email(order):
 
 
 class OrderHTMLAPIView(APIView):
+    """ HTML‑вьюха для отображения списка заказов пользователя.
+        Назначение:
+        - показывает все заказы текущего пользователя;
+        - используется в личном кабинете;
+        - рендерит шаблон orders.html.
+        Особенности:
+        - доступна только авторизованным пользователям.
+        """
     renderer_classes = [TemplateHTMLRenderer]
     permission_classes = [IsAuthenticated]
     template_name = 'orders.html'
@@ -146,6 +154,7 @@ class OrderHTMLAPIView(APIView):
 
 
 class OrderDetailHTMLView(APIView):
+    """Класс для отображения деталей конкретного заказа."""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'order_detail.html'
     permission_classes = [IsAuthenticated]
@@ -154,4 +163,3 @@ class OrderDetailHTMLView(APIView):
         order = get_object_or_404(Order, pk=pk, user=request.user)
         items = order.items.select_related('product')
         return Response({'order': order, 'items': items})
-

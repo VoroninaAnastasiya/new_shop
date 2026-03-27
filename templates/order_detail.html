@@ -25,4 +25,21 @@
     {% endfor %}
 </div>
 
+<h2>Оплата</h2>
+
+<div class="payment-block">
+    <a href="{% url 'create_payment' order.id %}" class="btn btn-primary pay-btn">
+        Оплатить через ЮKassa
+    </a>
+
+    <a href="{% url 'pay_by_card' order.id %}" class="btn btn-success pay-btn">
+        Оплатить картой
+    </a>
+
+    <a href="{% url 'pay_cash' order.id %}" class="btn btn-secondary pay-btn">
+        Оплатить наличными
+    </a>
+</div>
+
+
 {% endblock %}

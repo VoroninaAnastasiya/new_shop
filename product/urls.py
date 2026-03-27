@@ -22,4 +22,3 @@ urlpatterns = [
     # Старая главная (оставляем как отдельную страницу)
     path('main/', MainPageHTMLAPIView.as_view(), name='main_page_old'),
 ]
-

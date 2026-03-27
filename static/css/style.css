@@ -632,3 +632,27 @@ body {
     margin-top: auto;
 }
 
+/* Оплата */
+.payment-block {
+    margin: 30px auto;
+    padding: 25px;
+    max-width: 450px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.payment-block .pay-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px 0;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.payment-block .pay-btn:last-child {
+    margin-bottom: 0;
+}
+

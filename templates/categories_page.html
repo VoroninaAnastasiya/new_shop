@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Категории{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Категории</h1>
+
+<div class="products-grid">
+    {% for category in categories %}
+        <div class="product-card">
+            <h3>{{ category.name }}</h3>
+
+            <a href="{% url 'category_products_page' category.id %}" class="btn btn-outline">
+                Смотреть товары
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'home_page' %}" class="btn btn-secondary" style="margin-top: 20px;">
+    ← Назад
+</a>
+{% endblock %}

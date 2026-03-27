@@ -31,6 +31,7 @@ from rest_framework_simplejwt.views import (
 
 from brand.views import BrandsHTMLView, BrandProductsHTMLView
 from cart.views import CartHTMLDetailView
+from category.views import CategoriesHTMLView, CategoryProductsHTMLView
 from order.views import OrderHTMLAPIView
 from product.views import MainPageHTMLAPIView, HomePageView, ProductsPageView, ProductDetailHTMLView
 from user.views import ProfileHTMLAPIView
@@ -59,6 +60,9 @@ urlpatterns = [
 
     # Категории и бренды
     path('categories/', include('category.urls')),
+    path('categories/', CategoriesHTMLView.as_view(), name='categories_page'),
+    path('categories/<int:pk>/', CategoryProductsHTMLView.as_view(), name='category_products_page'),
+
     path('brands/', BrandsHTMLView.as_view(), name='brands_page'),
     path('brands/<int:pk>/', BrandProductsHTMLView.as_view(), name='brand_products_page'),
 
@@ -71,6 +75,9 @@ urlpatterns = [
     # Заказы
     path('orders/', OrderHTMLAPIView.as_view(), name='orders_page'),
     path('orders/', include('order.urls')),  # API
+
+    #Оплата
+    path('payments/', include('payments.urls')),
 
     # Профиль
     path('profile/', ProfileHTMLAPIView.as_view(), name='profile_page'),

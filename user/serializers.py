@@ -4,15 +4,17 @@ from django.contrib.auth import get_user_model
 from .models import ProfileUser
 
 User = get_user_model()
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('name', 'lastname', 'contact_phone', 'email', 'created_at', 'updated_at')
 
 
 class ProfileUserSerializer(serializers.ModelSerializer):
-    # email видно на фронте
-    user_email = serializers.EmailField(source='user_profile.email', read_only=True)
+    """Сериализатор профиля пользователя (ProfileUser).
+
+    Назначение:
+    - сериализует данные профиля, включая аватарку;
+    - предоставляет email пользователя через вложенное поле user_profile;
+    - защищает связь профиль → пользователь от изменения со стороны клиента."""
+
+    user_email = serializers.EmailField(source='user_profile.email', read_only=True) #видно email на фронте
     class Meta:
         model = ProfileUser
         fields = ('user_profile', 'user_email', 'image')
