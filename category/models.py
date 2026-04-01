@@ -27,3 +27,8 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Категория товара"
+        verbose_name_plural = "Категории"

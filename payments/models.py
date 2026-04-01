@@ -26,3 +26,8 @@ class Payment(models.Model):
     def __str__(self):
         return f'Оплата заказа #{self.order.id} ({self.get_status_display()})'
 
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Оплата заказа"
+        verbose_name_plural = "Оплаты заказов"
+

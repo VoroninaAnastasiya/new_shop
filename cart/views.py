@@ -15,22 +15,22 @@ from .serializers import CartItemSerializer
 from rest_framework.decorators import action
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def add_to_cart(request, product_id):
-    """метод добавление товара в корзину: проверка: есть ли товар в корзине. Если нет — создаёт новую запись.
-       Если есть — увеличивает количество. Работает только для авторизованных пользователей"""
-    product = get_object_or_404(Product, id=product_id)
-    item, created = CartItem.objects.get_or_create(
-        user=request.user,
-        product=product,
-        defaults={'quantity': 1}
-    )
-    if not created:
-        item.quantity += 1
-        item.save()
+class AddToCartView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self ,request, product_id):
+        """метод добавление товара в корзину: проверка: есть ли товар в корзине. Если нет — создаёт новую запись.
+           Если есть — увеличивает количество. Работает только для авторизованных пользователей"""
+        product = get_object_or_404(Product, id=product_id)
+        item, created = CartItem.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'quantity': 1}
+        )
+        if not created:
+            item.quantity += 1
+            item.save()
 
-    return redirect('cart_page')
+        return redirect('cart_page')
 
 
 @login_required(login_url='login_page')

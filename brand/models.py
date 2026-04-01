@@ -35,3 +35,8 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Бренд"
+        verbose_name_plural = "Бренды"

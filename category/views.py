@@ -3,9 +3,10 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from category.models import Category
 from category.serializers import CategorySerializer
-from product.models import Product
 
 
 class CategoryAPIView(generics.ListCreateAPIView):
@@ -20,7 +21,7 @@ class CategoryAPIView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 
 
-class CategoriesHTMLView(generics.ListAPIView):
+class CategoriesHTMLView(APIView):
     '''HTML‑представление списка категорий.
 
         Назначение:
@@ -31,23 +32,31 @@ class CategoriesHTMLView(generics.ListAPIView):
     queryset = Category.objects.all()
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'categories_page.html'
-    #TODO убмраем list, он не нужен так как мы и так выводим список
-    def list(self, request, *args, **kwargs):
-        return Response({'categories': self.get_queryset()})
+
+    def get(self, request, *args, **kwargs):
+        categories = Category.objects.all()
+        return Response({'categories': categories})
 
 
-class CategoryProductsHTMLView(generics.ListAPIView):
+class CategoryProductsHTMLView(APIView):
     '''HTML‑представление товаров одной категории'''
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'category_products_page.html'
 
-    def get_queryset(self):
-        category_id = self.kwargs['pk']
-        return Product.objects.filter(categories__id=category_id)
+    def get(self, request, pk):
+        # Получаем категорию и сразу подтягиваем связанные товары
+        category = (
+            Category.objects
+            .prefetch_related(
+                'products__brand',        # подтянуть бренд товара
+                'products__categories'    # подтянуть категории товара
+            )
+            .get(pk=pk)
+        )
 
-    def list(self, request, *args, **kwargs):
-        category = Category.objects.get(pk=self.kwargs['pk'])# как сделать одним запросом!
-        products = self.get_queryset()
+        # Товары уже подтянуты prefetch_related
+        products = category.products.all()
+
         return Response({
             'category': category,
             'products': products

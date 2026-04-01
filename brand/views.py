@@ -1,5 +1,8 @@
 from rest_framework import generics, filters
 from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+
 
 from product.models import Product
 from .models import Brand
@@ -72,48 +75,45 @@ class BrandsHTMLView(generics.ListAPIView):
         - используется в пользовательском интерфейсе каталога;
         - рендерит шаблон brands_page.html.
 
-        Особенности:
-        - TemplateHTMLRenderer возвращает HTML вместо JSON;
-        - метод list() передаёт в шаблон QuerySet брендов;
-        - может быть расширена поиском и сортировкой на стороне фронтенда.
         """
-    queryset = Brand.objects.all()
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'brands_page.html'
+    queryset = Brand.objects.all()
 
-    def list(self, request, *args, **kwargs):
-        return Response({'brands': self.get_queryset()})
+    def get(self, request, *args, **kwargs):
+        brands = self.get_queryset()
+        return Response({'brands': brands})
 
 
-class BrandProductsHTMLView(generics.ListAPIView):
+class BrandProductsHTMLView(APIView):
     """
-        HTML‑вьюха для отображения товаров конкретного бренда.
+    HTML‑вьюха для отображения товаров конкретного бренда.
 
-        Назначение:
-        - показывает все товары, относящиеся к выбранному бренду;
-        - используется в каталоге для фильтрации товаров по бренду;
-        - рендерит шаблон brand_products_page.html.
+    Назначение:
+    - показывает все товары выбранного бренда;
+    - используется в каталоге для фильтрации по бренду;
+    - рендерит шаблон brand_products_page.html.
 
-        Особенности:
-        - get_queryset() фильтрует товары по brand_id;
-        - list() передаёт в шаблон сам бренд и его товары;
-        - TemplateHTMLRenderer возвращает HTML‑страницу.
+    Особенности:
+    - загружает бренд и связанные товары;
+    - оптимизирована через select_related и prefetch_related;
+    - возвращает HTML‑страницу через TemplateHTMLRenderer.
+    """
 
-        Использование:
-        - /brands/<pk>/ — страница бренда;
-        - отображает товары в виде карточек.
-        """
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'brand_products_page.html'
 
-    def get_queryset(self):
-        brand_id = self.kwargs['pk']
-        return Product.objects.filter(brand_id=brand_id)
+    def get(self, request, pk):
+        brand = get_object_or_404(Brand, pk=pk)
 
-    def list(self, request, *args, **kwargs):
-        brand = Brand.objects.get(pk=self.kwargs['pk'])
-        products = self.get_queryset()
+        products = (
+            Product.objects
+            .filter(brand_id=pk)
+            .select_related('brand')
+            .prefetch_related('categories')
+        )
+
         return Response({
             'brand': brand,
             'products': products
-        }) # в шаблон передаётся бренд и список товаров.
+        })

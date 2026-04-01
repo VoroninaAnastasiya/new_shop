@@ -8,6 +8,8 @@
 {% block content %}
 <h1 class="page-title">Отзывы</h1>
 
+<a href="{% url 'review_add' %}" class="btn btn-primary">Оставить отзыв</a>
+
 <div class="reviews-container">
     {% for review in reviews %}
         <div class="review-card">

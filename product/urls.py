@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ProductsAPIView, ProductCreateAPIView, ProductAvailabilityView, MainPageHTMLAPIView, test, \
+from .views import ProductsAPIView, ProductCreateAPIView, ProductAvailabilityView, MainPageHTMLAPIView, \
     ProductDetailHTMLView, HomePageView, ProductsPageView
 
 urlpatterns = [
@@ -9,7 +9,6 @@ urlpatterns = [
     path('<int:pk>/availability/', ProductAvailabilityView.as_view(), name='product-availability'),
 
     path('<int:pk>/', ProductDetailHTMLView.as_view(), name='product_detail_page'),
-    path('test/', test, name='test_page'),
     path('', HomePageView.as_view(), name='home_page'),
 
 

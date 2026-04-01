@@ -15,43 +15,29 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order
 
-@login_required
-def payment_page(request, order_id):
-    """ HTML‑страница оплаты заказа.
+class PaymentPageView(APIView):
+    """ HTML‑страница оплаты заказа."""
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'payment.html'
 
-        Назначение:
-        - отображает страницу оплаты для конкретного заказа;
-        - доступна только авторизованным пользователям;
-        - используется для ручной/внутренней логики оплаты.
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        return Response({'order': order})
 
-        Логика:
-        1. Получить заказ текущего пользователя.
-        2. Если POST — выполнить оплату (логика может быть расширена).
-        3. Если GET — отобразить шаблон payment.html с данными заказа.
-        """
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-
-    if request.method == 'POST':
-        # здесь можно добавить логику оплаты
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
         return redirect('success_page', order_id=order.id)
 
-    return render(request, 'payment.html', {'order': order})
+class SuccessPageView(APIView):
+    """ HTML‑страница успешной оплаты."""
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'success.html'
 
-
-@login_required
-def success_page(request, order_id):
-    """ HTML‑страница успешной оплаты.
-
-        Назначение:
-        - отображает подтверждение успешной оплаты;
-        - показывает данные заказа пользователю.
-
-        Логика:
-        1. Получить заказ текущего пользователя.
-        2. Передать его в шаблон success.html.
-        """
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'success.html', {'order': order})
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        return Response({'order': order})
 
 
 class OrderViewSet(viewsets.ModelViewSet):

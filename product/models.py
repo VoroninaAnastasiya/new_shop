@@ -50,3 +50,8 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.price}"
+
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Продукт"
+        verbose_name_plural = "Продукты"

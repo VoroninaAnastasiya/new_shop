@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Оставить отзыв{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Оставить отзыв</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Ваше имя:</label>
+    <input type="text" name="name" required>
+
+    <label>Категория:</label>
+    <select name="category">
+        <option value="product">О товаре</option>
+        <option value="store">О магазине</option>
+        <option value="delivery">О доставке</option>
+    </select>
+
+    <label>Отзыв:</label>
+    <textarea name="text" required></textarea>
+
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
+{% endblock %}

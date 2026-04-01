@@ -67,6 +67,11 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} by {self.user}"
 
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
 
 class OrderItem(models.Model):
     """Позиция заказа — отдельный товар в составе заказа.

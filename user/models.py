@@ -32,3 +32,8 @@ class ProfileUser(models.Model):
     def __str__(self):
         """Возвращает удобное строковое представление профиля."""
         return f"Профиль: {self.user_profile.email}"
+
+    class Meta:
+        #улучшает отображение модели в Django Admin
+        verbose_name = "Профиль пользователя"
+        verbose_name_plural = "Профили пользователей"

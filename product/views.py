@@ -12,37 +12,29 @@ from product.models import Product
 from product.serializers import ProductSerializer
 
 from .pagination import ProductPagination
+
 def test(request):
     """Вспомогательная функция для рендера тестового шаблона."""
     return render(request, 'test.jinja')
 
 
-class MainPageHTMLAPIView(generics.ListAPIView):
+class MainPageHTMLAPIView(APIView):
     """ Для отображения главной страницы каталога.
 
         Назначение:
         - выводит список товаров, категорий и брендов;
         - используется для основной витрины магазина;
-
-        Особенности:
-        - TemplateHTMLRenderer рендерит HTML вместо JSON;
-        - queryset определён, но метод get переопределён для передачи
-          дополнительных данных (категории и бренды);
-        - данные передаются в шаблон в виде QuerySet’ов.
-
-        Использование:
-        - отображение главной страницы каталога;
-        - может быть расширена фильтрацией, поиском, сортировкой.
         """
 
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'main_page.html'
 
-    queryset = Product.objects.all()
-
     def get(self, request, *args, **kwargs):
-        """Возвращает HTML‑страницу с товарами, категориями и брендами."""
-        products = Product.objects.all()
+        products = (
+            Product.objects
+            .select_related('brand')
+            .prefetch_related('categories')
+        )
         categories = Category.objects.all()
         brands = Brand.objects.all()
 
@@ -87,19 +79,14 @@ class ProductAvailabilityView(APIView):
         - используется корзиной, оформлением заказа"""
     permission_classes = [permissions.AllowAny]
 
-    def get(self,request, pk):
-        """Возвращает информацию о наличии товара."""
-        try:
-            product = Product.objects.get(pk=pk)
-        except Product.DoesNotExist:
-            return Response ({'error': 'Товар не найден'}, status=404)
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
 
         return Response({
             'id': product.id,
             'name': product.name,
             'available_quantity': product.available_quantity
-        })#TODO get_object_or_404 django product = get_object_or_404(Product, id=pk)
-
+        })
 
 class ProductDetailHTMLView(APIView):
     """Класс для отображения карточки товара в HTML.
@@ -135,10 +122,15 @@ class ProductsPageView(APIView):
     template_name = 'products_page.html'
 
     def get(self, request):
-        """Возвращает HTML‑страницу каталога"""
         categories = Category.objects.all()
         brands = Brand.objects.all()
-        products = Product.objects.all()
+
+        products = (
+            Product.objects
+            .select_related('brand')
+            .prefetch_related('categories')
+        )
+
         return Response({
             'categories': categories,
             'brands': brands,
